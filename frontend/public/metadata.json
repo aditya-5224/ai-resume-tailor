@@ -1,0 +1,5 @@
+
+{
+  "name": "AI Resume Tailor",
+  "description": "An application that uses AI to tailor a resume based on a job description. Users can upload their resume in .docx format, provide a job description, and the app will generate a tailored resume."
+}

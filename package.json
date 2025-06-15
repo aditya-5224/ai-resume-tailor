@@ -4,11 +4,14 @@
   "private": true,
   "scripts": {
     "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
-    "start:backend": "cd backend && npm run dev",
-    "start:frontend": "cd frontend && npm run dev",
-    "install:all": "npm install && cd frontend && npm install && cd ../backend && npm install"
+    "start:backend": "powershell -Command \"Push-Location backend; npm run dev; Pop-Location\"",
+    "start:frontend": "powershell -Command \"Push-Location frontend; npm run dev; Pop-Location\"",
+    "install:all": "powershell -Command \"npm install; Push-Location frontend; npm install; Pop-Location; Push-Location backend; npm install; Pop-Location\""
   },
   "devDependencies": {
-    "concurrently": "^8.0.1"
+    "autoprefixer": "^10.4.21",
+    "concurrently": "^8.0.1",
+    "postcss": "^8.5.5",
+    "tailwindcss": "^4.1.10"
   }
 }

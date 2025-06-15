@@ -12,7 +12,7 @@ const AppState = {
   Error: 'ERROR'
 };
 
-function App() {
+export default function App() {
   const [resumeText, setResumeText] = useState('');
   const [jobDescription, setJobDescription] = useState('');
   const [tailoredResume, setTailoredResume] = useState(null);
@@ -138,4 +138,3 @@ function App() {
   );
 }
 
-export default App;

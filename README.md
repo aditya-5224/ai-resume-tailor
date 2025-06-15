@@ -72,6 +72,34 @@ The build output will be in the `frontend/dist` folder.
   - Express
   - Google Generative AI SDK
 
+## API Documentation
+
+### Test API Connection
+```bash
+curl http://localhost:5000/api/test
+```
+
+### Tailor Resume
+```bash
+curl -X POST http://localhost:5000/api/tailor-resume \
+  -H "Content-Type: application/json" \
+  -d '{
+    "resumeText": "Your resume content here...",
+    "jobDescription": "Job description content here..."
+  }'
+```
+
+Expected Response:
+```json
+{
+  "tailoredResume": {
+    "TAILORED RESUME": "...",
+    "CHANGES EXPLAINED": "...",
+    "MATCH SCORE": "..."
+  }
+}
+```
+
 ## License
 
 MIT

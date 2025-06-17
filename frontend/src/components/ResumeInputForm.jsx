@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useRef } from 'react';
 import { UploadIcon } from './icons/EditorIcons';
 import { CheckCircleIcon } from './icons/StatusIcons';
+import './ResumeInputForm.css';
 
 export function ResumeInputForm({
   onFileUpload,
@@ -12,6 +13,7 @@ export function ResumeInputForm({
   appState
 }) {
   const [fileName, setFileName] = useState(null);
+  const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef(null);
 
   const handleFileChange = useCallback((event) => {
@@ -27,11 +29,19 @@ export function ResumeInputForm({
   const handleDragOver = useCallback((event) => {
     event.preventDefault();
     event.stopPropagation();
+    setIsDragging(true);
+  }, []);
+
+  const handleDragLeave = useCallback((event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setIsDragging(false);
   }, []);
 
   const handleDrop = useCallback((event) => {
     event.preventDefault();
     event.stopPropagation();
+    setIsDragging(false);
     const file = event.dataTransfer.files?.[0];
     if (file) {
       setFileName(file.name);
@@ -48,85 +58,86 @@ export function ResumeInputForm({
   const isFileUploaded = !!fileName && !isProcessingFile && appState !== 'ERROR';
 
   return (
-    <div className="card space-y-6">
-      <div>
-        <label htmlFor="resume-upload" className="text-sm font-medium">
-          Upload Your Resume (.docx)
-        </label>
-        <label
-          htmlFor="resume-file"
-          onDragOver={handleDragOver}
-          onDrop={handleDrop}
-          className={`upload-zone ${
-            isProcessingFile ? 'processing' : (isFileUploaded ? 'success' : '')
-          }`}
-        >
-          <div className="upload-content">
-            {isProcessingFile ? (
-              <div className="processing-state">
-                <UploadIcon className="icon" />
-                <p className="text-sm font-medium">Processing file...</p>
-              </div>
-            ) : isFileUploaded ? (
-               <div className="success-state">
-                <CheckCircleIcon className="icon" />
-                <p className="text-sm font-medium">File ready: {fileName}</p>
-                <p className="text-sm">Click to change</p>
-              </div>
-            ) : (
-              <>
-                <UploadIcon className="icon" />
-                <div className="upload-text">
-                  <span className="upload-button">
-                    Upload a file
-                  </span>
-                  <input 
-                    id="resume-file" 
-                    name="resume-file" 
-                    type="file" 
-                    className="hidden" 
-                    accept=".docx" 
-                    onChange={handleFileChange} 
-                    ref={fileInputRef} 
-                  />
-                  <p>or drag and drop</p>
+    <div className="resume-form-container">
+      <div className="resume-form">
+        <div className="form-grid">
+          <div className="form-section upload-section">
+            <label htmlFor="resume-upload" className="form-label">
+              Upload Your Resume (.docx)
+            </label>
+            <div
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+              className={`upload-area ${isDragging ? 'shine-effect' : ''}`}
+            >
+              {isProcessingFile ? (
+                <div className="upload-content">
+                  <UploadIcon className="upload-icon spinning" />
+                  <p className="upload-text">Processing file...</p>
                 </div>
-                <p className="text-sm">DOCX up to 10MB</p>
-              </>
-            )}
+              ) : isFileUploaded ? (
+                <div className="upload-content">
+                  <CheckCircleIcon className="upload-icon success" />
+                  <p className="upload-text">File ready: {fileName}</p>
+                  <p className="upload-subtitle">Click to change</p>
+                </div>
+              ) : (
+                <div className="upload-content">
+                  <UploadIcon className="upload-icon" />
+                  <div className="upload-text-container">
+                    <label className="upload-label">
+                      <span className="upload-link">
+                        Choose a file
+                      </span>
+                      <input 
+                        type="file" 
+                        className="hidden" 
+                        accept=".docx" 
+                        onChange={handleFileChange} 
+                        ref={fileInputRef}
+                        id="resume-upload"
+                      />
+                    </label>
+                    <p className="upload-subtitle">or drag and drop</p>
+                    <p className="upload-subtitle">DOCX up to 10MB</p>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
-        </label>
-      </div>
 
-      <div>
-        <label htmlFor="job-description" className="text-sm font-medium">
-          Job Description
-        </label>
-        <textarea
-          id="job-description"
-          name="job-description"
-          rows={8}
-          className="form-input"
-          placeholder="Paste the job description here..."
-          value={jobDescription}
-          onChange={(e) => setJobDescription(e.target.value)}
-        />
-      </div>
-
-      {error && (
-        <div className="error-message">
-          {error.message}
+          <div className="form-section description-section">
+            <label htmlFor="job-description" className="form-label">
+              Job Description
+            </label>
+            <div className="job-description-container">
+              <textarea
+                id="job-description"
+                className="job-description-input"
+                placeholder="Paste the job description here..."
+                value={jobDescription}
+                onChange={(e) => setJobDescription(e.target.value)}
+              />
+            </div>
+          </div>
         </div>
-      )}
 
-      <div className="flex justify-between">
-        <button
-          onClick={onSubmit}
-          disabled={isLoading || !fileName || !jobDescription.trim()}
-          className={`btn-primary ${isLoading ? 'loading' : ''}`}
-        >
-          {isLoading ? 'Processing...' : 'Tailor Resume'}
-        </button>
+        <div className="button-container">
+          {error && (
+            <div className="error-message">
+              {error.message}
+            </div>
+          )}
+          
+          <button
+            onClick={onSubmit}
+            disabled={isLoading || !fileName || !jobDescription.trim()}
+            className={`tailor-button ${isLoading ? 'disabled' : ''}`}
+          >
+            {isLoading ? 'Processing...' : 'Tailor Resume'}
+          </button>
+        </div>
       </div>
     </div>
   );

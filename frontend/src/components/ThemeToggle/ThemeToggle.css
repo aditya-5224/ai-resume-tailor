@@ -1,0 +1,250 @@
+.theme-toggle-wrapper {
+  --toggle-width: 76px;
+  --toggle-height: 38px;
+  --handle-size: 30px;
+  --handle-margin: 4px;
+  --blur-strength: 12px;
+  --border-width: 1px;
+  --icon-size: 16px;
+  
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+}
+
+.theme-toggle {
+  appearance: none;
+  border: none;
+  background: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  width: var(--toggle-width);
+  height: var(--toggle-height);
+  position: relative;
+  border-radius: 100px;
+}
+
+.toggle-track {
+  width: 100%;
+  height: 100%;
+  border-radius: 100px;
+  position: relative;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(var(--blur-strength));
+  -webkit-backdrop-filter: blur(var(--blur-strength));
+  border: var(--border-width) solid rgba(255, 255, 255, 0.12);
+  transition: all 0.3s ease;
+}
+
+.theme-toggle.dark .toggle-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.toggle-icons {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 calc(var(--handle-margin) + 8px);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--icon-size);
+  height: var(--icon-size);
+  color: var(--text-primary);
+  opacity: 0.5;
+  transition: all 0.3s ease;
+}
+
+.icon-wrapper.active {
+  opacity: 1;
+}
+
+.theme-icon {
+  width: 100%;
+  height: 100%;
+}
+
+.toggle-handle {
+  width: var(--handle-size);
+  height: var(--handle-size);
+  position: absolute;
+  top: var(--handle-margin);
+  left: var(--handle-margin);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.99);
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.12),
+    0 1px 3px rgba(0, 0, 0, 0.08);
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.handle-glass-effect {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.handle-icon {
+  width: var(--icon-size);
+  height: var(--icon-size);
+  color: var(--accent-color);
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.handle-shine {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60%;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.9),
+    rgba(255, 255, 255, 0)
+  );
+  border-radius: inherit;
+  opacity: 0.8;
+  transition: opacity 0.3s ease;
+}
+
+.handle-reflection {
+  position: absolute;
+  top: 10%;
+  left: 10%;
+  width: 35%;
+  height: 35%;
+  background: rgba(255, 255, 255, 1);
+  border-radius: 50%;
+  filter: blur(1px);
+  opacity: 0.7;
+}
+
+.handle-gradient {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(255, 255, 255, 0.1),
+    transparent 80%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.theme-toggle:hover .handle-gradient {
+  opacity: 1;
+}
+
+.track-glass-effect {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom right,
+    rgba(255, 255, 255, 0.15),
+    rgba(255, 255, 255, 0.05)
+  );
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.theme-toggle.dark .track-glass-effect {
+  background: linear-gradient(
+    to bottom right,
+    rgba(255, 255, 255, 0.08),
+    rgba(255, 255, 255, 0.02)
+  );
+}
+
+@keyframes sheen {
+  0% {
+    transform: translateX(-100%) skewX(-15deg);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(200%) skewX(-15deg);
+    opacity: 0.6;
+  }
+}
+
+@keyframes iconSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.theme-toggle:active .handle-glass-effect::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.6),
+    transparent
+  );
+  animation: sheen 0.6s ease-in-out;
+}
+
+/* Hover effects */
+.theme-toggle:hover .handle-shine {
+  opacity: 1;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .theme-toggle-wrapper {
+    --toggle-width: 70px;
+    --toggle-height: 36px;
+    --handle-size: 28px;
+    --icon-size: 14px;
+  }
+}
+
+/* High contrast & accessibility */
+@media (prefers-contrast: more) {
+  .toggle-label {
+    opacity: 0.8;
+  }
+  
+  .toggle-label.active {
+    opacity: 1;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .theme-toggle,
+  .toggle-handle,
+  .handle-icon,
+  .icon-wrapper,
+  .handle-glass-effect,
+  .handle-shine,
+  .handle-reflection,
+  .handle-gradient {
+    transition: none !important;
+    animation: none !important;
+  }
+  
+  .theme-toggle:hover .handle-gradient {
+    opacity: 0;
+  }
+}

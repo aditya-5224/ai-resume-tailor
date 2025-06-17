@@ -1,8 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ResumeInputForm } from './components/ResumeInputForm';
 import { FormattedResumeDisplay } from './components/FormattedResumeDisplay';
 import { processResumeWithGemini } from './services/geminiService';
-import { SunIcon, MoonIcon } from './components/icons/ThemeIcons';
+import Navbar from './components/navbar/navbar';
+import Footer from './components/layout/Footer';
+import './styles/global.css';
+import './styles/layout.css';
 
 const AppState = {
   Idle: 'IDLE',
@@ -10,6 +14,41 @@ const AppState = {
   Generating: 'GENERATING',
   Success: 'SUCCESS',
   Error: 'ERROR'
+};
+
+const MainContent = ({
+  darkMode,
+  resumeText,
+  setResumeText,
+  jobDescription,
+  setJobDescription,
+  tailoredResume,
+  isLoading,
+  error,
+  appState,
+  handleSubmit,
+  handleFileUpload
+}) => {
+  return (
+    <div className="app-content">
+      <div className="content-wrapper">
+        <ResumeInputForm
+          resumeText={resumeText}
+          setResumeText={setResumeText}
+          jobDescription={jobDescription}
+          setJobDescription={setJobDescription}
+          isLoading={isLoading}
+          error={error}
+          appState={appState}
+          handleSubmit={handleSubmit}
+          handleFileUpload={handleFileUpload}
+        />
+        {tailoredResume && (
+          <FormattedResumeDisplay tailoredResume={tailoredResume} />
+        )}
+      </div>
+    </div>
+  );
 };
 
 export default function App() {
@@ -29,17 +68,19 @@ export default function App() {
 
   useEffect(() => {
     if (darkMode) {
-      document.documentElement.classList.add('dark');
+      document.body.classList.add('dark-mode');
+      document.body.classList.remove('light-mode');
       localStorage.setItem('theme', 'dark');
     } else {
-      document.documentElement.classList.remove('dark');
+      document.body.classList.add('light-mode');
+      document.body.classList.remove('dark-mode');
       localStorage.setItem('theme', 'light');
     }
   }, [darkMode]);
 
-  const toggleDarkMode = () => {
-    setDarkMode(prevMode => !prevMode);
-  };
+  const toggleDarkMode = useCallback(() => {
+    setDarkMode(prev => !prev);
+  }, []);
 
   const handleFileUpload = async (file) => {
     if (!file) {
@@ -103,38 +144,43 @@ export default function App() {
       setIsLoading(false);
     }
   }, [resumeText, jobDescription]);
-
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">AI Resume Tailor</h1>
-          <button
-            onClick={toggleDarkMode}
-            className="p-2 rounded-lg bg-gray-200 dark:bg-gray-700"
-          >
-            {darkMode ? <SunIcon /> : <MoonIcon />}
-          </button>
+    <Router>
+      <div className={`app-container ${darkMode ? 'dark-mode' : 'light-mode'}`}
+           style={{ 
+             minHeight: '100vh',
+             display: 'flex',
+             flexDirection: 'column'
+           }}>
+        {/* Background Pattern */}
+        <div className="fixed inset-0 z-0 pattern-background" />
+
+        <Navbar darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
+        <div className="page-content" style={{ flex: 1, marginTop: '70px', paddingBottom: '60px' }}>
+          <Routes>
+            <Route 
+              path="/" 
+              element={
+                <MainContent
+                  darkMode={darkMode}
+                  resumeText={resumeText}
+                  setResumeText={setResumeText}
+                  jobDescription={jobDescription}
+                  setJobDescription={setJobDescription}
+                  tailoredResume={tailoredResume}
+                  isLoading={isLoading}
+                  error={error}
+                  appState={appState}
+                  handleSubmit={handleSubmit}
+                  handleFileUpload={handleFileUpload}
+                />
+              } 
+            />
+          </Routes>
         </div>
-
-        <ResumeInputForm
-          onFileUpload={handleFileUpload}
-          jobDescription={jobDescription}
-          setJobDescription={setJobDescription}
-          onSubmit={handleSubmit}
-          isLoading={isLoading}
-          error={error}
-          appState={appState}
-        />
-
-        {tailoredResume && (
-          <FormattedResumeDisplay
-            formattedResume={tailoredResume}
-            originalResume={resumeText}
-          />
-        )}
+        <Footer darkMode={darkMode} />
       </div>
-    </div>
+    </Router>
   );
 }
 

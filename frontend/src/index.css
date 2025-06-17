@@ -1,4 +1,21 @@
-/* Reset and base styles */
+/* Base styles and theme transitions */
+body {
+    margin: 0;
+    padding: 0;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+body.dark-mode {
+    background-color: #1a1a1a;
+    color: #ffffff;
+}
+
+/* Ensure smooth transitions for all theme changes */
+* {
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
+
+/* Theme variables */
 :root {
   --primary-50: #f0f9ff;
   --primary-100: #e0f2fe;

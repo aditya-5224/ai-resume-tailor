@@ -4,10 +4,10 @@ import { CheckCircleIcon } from './icons/StatusIcons';
 import './ResumeInputForm.css';
 
 export function ResumeInputForm({
-  onFileUpload,
+  handleFileUpload,
   jobDescription,
   setJobDescription,
-  onSubmit,
+  handleSubmit,
   isLoading,
   error,
   appState
@@ -20,11 +20,11 @@ export function ResumeInputForm({
     const file = event.target.files?.[0];
     if (file) {
       setFileName(file.name);
-      onFileUpload(file);
+      handleFileUpload(file);
     } else {
       setFileName(null);
     }
-  }, [onFileUpload]);
+  }, [handleFileUpload]);
 
   const handleDragOver = useCallback((event) => {
     event.preventDefault();
@@ -50,9 +50,9 @@ export function ResumeInputForm({
         dataTransfer.items.add(file);
         fileInputRef.current.files = dataTransfer.files;
       }
-      onFileUpload(file);
+      handleFileUpload(file);
     }
-  }, [onFileUpload]);
+  }, [handleFileUpload]);
 
   const isProcessingFile = appState === 'PROCESSING_FILE';
   const isFileUploaded = !!fileName && !isProcessingFile && appState !== 'ERROR';
@@ -131,7 +131,7 @@ export function ResumeInputForm({
           )}
           
           <button
-            onClick={onSubmit}
+            onClick={handleSubmit}
             disabled={isLoading || !fileName || !jobDescription.trim()}
             className={`tailor-button ${isLoading ? 'disabled' : ''}`}
           >

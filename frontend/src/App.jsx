@@ -130,10 +130,9 @@ export default function App() {
     setIsLoading(true);
     setError(null);
     setTailoredResume(null);
-    setAppState(AppState.Generating);
-
-    try {
+    setAppState(AppState.Generating);    try {
       const result = await processResumeWithGemini(resumeText, jobDescription);
+      console.log('API response result:', result);
       setTailoredResume(result);
       setAppState(AppState.Success);
     } catch (err) {

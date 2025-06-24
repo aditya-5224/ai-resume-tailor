@@ -11,5 +11,6 @@ const task = {
 	"add a loading spinner on submit button" ("FE task"),
     "netlify, vercell for hosting",
 	"add a loading spinner on submit button" ("FE task"),
+	
   ]
 }

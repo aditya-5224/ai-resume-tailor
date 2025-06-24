@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import './navbar.css';
+import './Navbar.css';
 
 const Navbar = ({ darkMode, toggleDarkMode }) => {
     const location = useLocation();

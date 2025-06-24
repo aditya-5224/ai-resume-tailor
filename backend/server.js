@@ -18,6 +18,14 @@ app.use(express.json({ limit: '10mb' }));
 // Initialize Gemini API with API key
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
+// Health check endpoint for Docker
+app.get('/api/test', (req, res) => {
+    res.status(200).json({ 
+        status: 'healthy', 
+        timestamp: new Date().toISOString(),
+        service: 'ai-resume-tailor-backend'
+    });
+});
 
 app.post('/api/tailor-resume', async (req, res) => {
     try {

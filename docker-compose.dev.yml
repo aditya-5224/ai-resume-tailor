@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  # Backend service for development
+  backend-dev:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    container_name: ai-resume-tailor-backend-dev
+    ports:
+      - "5000:5000"
+    environment:
+      - NODE_ENV=development
+      - PORT=5000
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+    env_file:
+      - ./backend/.env
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    networks:
+      - ai-resume-network-dev
+    restart: unless-stopped
+    command: npm run dev
+
+  # Frontend service for development
+  frontend-dev:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: ai-resume-tailor-frontend-dev
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_API_URL=http://localhost:5000
+    env_file:
+      - ./frontend/.env
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend-dev
+    networks:
+      - ai-resume-network-dev
+    restart: unless-stopped
+    command: npm run dev
+
+# Define custom network for development
+networks:
+  ai-resume-network-dev:
+    driver: bridge
+    name: ai-resume-network-dev

@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ResumeInputForm } from './components/ResumeInputForm';
 import { FormattedResumeDisplay } from './components/FormattedResumeDisplay';
 import { processResumeWithGemini } from './services/geminiService';
-import Navbar from './components/navbar/navbar';
+import Navbar from './components/Navbar/Navbar';
 import Footer from './components/layout/Footer';
 import './styles/global.css';
 import './styles/layout.css';
@@ -177,7 +177,7 @@ export default function App() {
             />
           </Routes>
         </div>
-        <Footer darkMode={darkMode} />
+        {/* <Footer darkMode={darkMode} /> */}
       </div>
     </Router>
   );

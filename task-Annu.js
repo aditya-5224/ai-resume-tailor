@@ -9,6 +9,7 @@ const task = {
 	"components addition - Navbar, Footer, about ." ("FE task"),
 	"tailored resume i= should be in proper resume.docx format instead of text and should be downloadable." ("FE task"),
 	"add a loading spinner on submit button" ("FE task"),
-    "netlify, vercell for hosting"
+    "netlify, vercell for hosting",
+	"add a loading spinner on submit button" ("FE task"),
   ]
 }

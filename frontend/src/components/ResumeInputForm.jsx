@@ -6,6 +6,8 @@ import { LoadingOverlay } from './LoadingOverlay';
 import './ResumeInputForm.css';
 
 export function ResumeInputForm({
+  resumeText,
+  setResumeText,
   handleFileUpload,
   jobDescription,
   setJobDescription,

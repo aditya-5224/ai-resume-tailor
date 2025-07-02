@@ -37,6 +37,20 @@
     border-bottom: 2px solid var(--accent-color);
     color: var(--accent-color);
     letter-spacing: -0.01em;
+    position: relative;
+}
+
+.formatted-resume h2::before {
+    content: '';
+    position: absolute;
+    left: -12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 20px;
+    background: var(--accent-color);
+    border-radius: 2px;
+    opacity: 0.3;
 }
 
 .formatted-resume h3 {
@@ -55,9 +69,21 @@
     text-align: center;
     margin-bottom: var(--spacing-xl);
     padding: var(--spacing-md);
-    background: var(--glass-bg);
+    background: linear-gradient(135deg, var(--glass-bg) 0%, rgba(59, 130, 246, 0.02) 100%);
     border-radius: var(--border-radius-sm);
     border: 1px solid var(--border-color);
+    position: relative;
+}
+
+.formatted-resume .contact-info::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--highlight-gradient);
+    border-radius: var(--border-radius-sm) var(--border-radius-sm) 0 0;
 }
 
 .formatted-resume .job-title {

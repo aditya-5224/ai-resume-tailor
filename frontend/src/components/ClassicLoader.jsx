@@ -23,18 +23,18 @@ export function ClassicLoader({ size = 'medium', text = 'Processing...', variant
             <div className="loader-center-pattern">
               {/* Classic formal center effects */}
               <div className="classic-core">
-                <div className="center-orb"></div>
-                <div className="elegant-ring ring-outer"></div>
-                <div className="elegant-ring ring-inner"></div>
-                <div className="formal-dots">
-                  <div className="formal-dot dot-1"></div>
-                  <div className="formal-dot dot-2"></div>
-                  <div className="formal-dot dot-3"></div>
-                  <div className="formal-dot dot-4"></div>
+                <div className="center-diamond"></div>
+                <div className="rotating-elements">
+                  <div className="element element-1"></div>
+                  <div className="element element-2"></div>
+                  <div className="element element-3"></div>
+                  <div className="element element-4"></div>
                 </div>
-                <div className="classic-symbol">
-                  <div className="symbol-cross"></div>
-                  <div className="symbol-center"></div>
+                <div className="pulsing-ring"></div>
+                <div className="center-star">
+                  <div className="star-beam beam-1"></div>
+                  <div className="star-beam beam-2"></div>
+                  <div className="star-center"></div>
                 </div>
               </div>
             </div>

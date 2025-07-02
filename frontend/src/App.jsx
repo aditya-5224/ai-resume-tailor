@@ -1,9 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import { ResumeInputForm } from './components/ResumeInputForm';
 import { FormattedResumeDisplay } from './components/FormattedResumeDisplay';
+import ResumeResults from './components/ResumeResults';
+import About from './components/pages/About';
+import Contact from './components/pages/Contact';
 import { processResumeWithGemini } from './services/geminiService';
-import Navbar from './components/Navbar/Navbar';
+import Navbar from './components/navbar/navbar';
 import Footer from './components/layout/Footer';
 import './styles/global.css';
 import './styles/layout.css';
@@ -27,7 +30,8 @@ const MainContent = ({
   error,
   appState,
   handleSubmit,
-  handleFileUpload
+  handleFileUpload,
+  navigate
 }) => {
   return (
     <div className="app-content">
@@ -43,18 +47,39 @@ const MainContent = ({
           handleSubmit={handleSubmit}
           handleFileUpload={handleFileUpload}
         />
-        {tailoredResume && (
-          <FormattedResumeDisplay tailoredResume={tailoredResume} />
-        )}
       </div>
     </div>
   );
 };
 
-export default function App() {
-  const [resumeText, setResumeText] = useState('');
+const ResultsPage = ({ 
+  resumeText, 
+  tailoredResume, 
+  navigate 
+}) => {
+  const handleBackToHome = () => {
+    navigate('/');
+  };
+
+  return (
+    <ResumeResults
+      originalResume={resumeText}
+      tailoredResume={tailoredResume}
+      onBackToHome={handleBackToHome}
+    />
+  );
+};
+
+const AppContent = () => {
+  const [resumeText, setResumeText] = useState(() => {
+    const saved = localStorage.getItem('ai-resume-tailor-resume');
+    return saved || '';
+  });
   const [jobDescription, setJobDescription] = useState('');
-  const [tailoredResume, setTailoredResume] = useState(null);
+  const [tailoredResume, setTailoredResume] = useState(() => {
+    const saved = localStorage.getItem('ai-resume-tailor-tailored');
+    return saved || null;
+  });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [appState, setAppState] = useState(AppState.Idle);
@@ -65,6 +90,19 @@ export default function App() {
     }
     return false;
   });
+
+  const navigate = useNavigate();
+
+  // Save data to localStorage when it changes
+  useEffect(() => {
+    localStorage.setItem('ai-resume-tailor-resume', resumeText);
+  }, [resumeText]);
+
+  useEffect(() => {
+    if (tailoredResume) {
+      localStorage.setItem('ai-resume-tailor-tailored', tailoredResume);
+    }
+  }, [tailoredResume]);
 
   useEffect(() => {
     if (darkMode) {
@@ -117,7 +155,7 @@ export default function App() {
 
   const handleSubmit = useCallback(async () => {
     if (!resumeText.trim()) {
-      setError({ message: 'Resume content is missing. Please upload a resume.' });
+      setError({ message: 'Please upload a resume file first.' });
       setAppState(AppState.Error);
       return;
     }
@@ -130,11 +168,15 @@ export default function App() {
     setIsLoading(true);
     setError(null);
     setTailoredResume(null);
-    setAppState(AppState.Generating);    try {
+    setAppState(AppState.Generating);
+
+    try {
       const result = await processResumeWithGemini(resumeText, jobDescription);
-      console.log('API response result:', result);
       setTailoredResume(result);
       setAppState(AppState.Success);
+      
+      // Navigate to results page after successful generation
+      navigate('/results');
     } catch (err) {
       console.error('Error tailoring resume:', err);
       setError({ message: `Failed to tailor resume: ${err.message}. Ensure the API key is correct and the AI model is responding as expected.` });
@@ -142,43 +184,63 @@ export default function App() {
     } finally {
       setIsLoading(false);
     }
-  }, [resumeText, jobDescription]);
+  }, [resumeText, jobDescription, navigate]);
+
+  return (
+    <div className={`app-container ${darkMode ? 'dark-mode' : 'light-mode'}`}
+         style={{ 
+           minHeight: '100vh',
+           display: 'flex',
+           flexDirection: 'column'
+         }}>
+      {/* Background Pattern */}
+      <div className="pattern-background" />
+
+      <Navbar darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
+      <div className="page-content" style={{ flex: 1, marginTop: '70px', paddingBottom: '60px' }}>
+        <Routes>
+          <Route 
+            path="/" 
+            element={
+              <MainContent
+                darkMode={darkMode}
+                resumeText={resumeText}
+                setResumeText={setResumeText}
+                jobDescription={jobDescription}
+                setJobDescription={setJobDescription}
+                tailoredResume={tailoredResume}
+                isLoading={isLoading}
+                error={error}
+                appState={appState}
+                handleSubmit={handleSubmit}
+                handleFileUpload={handleFileUpload}
+                navigate={navigate}
+              />
+            } 
+          />
+          <Route 
+            path="/results" 
+            element={
+              <ResultsPage
+                resumeText={resumeText}
+                tailoredResume={tailoredResume}
+                navigate={navigate}
+              />
+            } 
+          />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+        </Routes>
+      </div>
+      <Footer darkMode={darkMode} />
+    </div>
+  );
+};
+
+export default function App() {
   return (
     <Router>
-      <div className={`app-container ${darkMode ? 'dark-mode' : 'light-mode'}`}
-           style={{ 
-             minHeight: '100vh',
-             display: 'flex',
-             flexDirection: 'column'
-           }}>
-        {/* Background Pattern */}
-        <div className="fixed inset-0 z-0 pattern-background" />
-
-        <Navbar darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
-        <div className="page-content" style={{ flex: 1, marginTop: '70px', paddingBottom: '60px' }}>
-          <Routes>
-            <Route 
-              path="/" 
-              element={
-                <MainContent
-                  darkMode={darkMode}
-                  resumeText={resumeText}
-                  setResumeText={setResumeText}
-                  jobDescription={jobDescription}
-                  setJobDescription={setJobDescription}
-                  tailoredResume={tailoredResume}
-                  isLoading={isLoading}
-                  error={error}
-                  appState={appState}
-                  handleSubmit={handleSubmit}
-                  handleFileUpload={handleFileUpload}
-                />
-              } 
-            />
-          </Routes>
-        </div>
-        {/* <Footer darkMode={darkMode} /> */}
-      </div>
+      <AppContent />
     </Router>
   );
 }

@@ -43,24 +43,38 @@ app.post('/api/tailor-resume', async (req, res) => {
         });
 
         const prompt = `
-            As an expert resume tailoring assistant, analyze the provided resume and job description to create a tailored version. 
-            
-            Resume:
-            ${resumeText}
-            
-            Job Description:
-            ${jobDescription}
-            
-            Please provide your response in the following format:
-            
-            TAILORED RESUME:
-            [The tailored resume content]
-            
-            CHANGES EXPLAINED:
-            [A brief explanation of the key changes made and why]
-            
-            MATCH SCORE:
-            [A score out of 100 indicating how well the original resume matched the job requirements]
+You are an expert resume writer. Your task is to tailor the provided resume to match the job description while preserving the EXACT structure and format.
+
+CRITICAL REQUIREMENTS:
+1. PRESERVE ALL SECTION HEADINGS EXACTLY as they appear in the original (PERSONAL INFORMATION, CONTACT, SUMMARY, EXPERIENCE, EDUCATION, SKILLS, etc.)
+2. COPY PERSONAL INFORMATION SECTION EXACTLY - name, phone, email, address, LinkedIn - NO CHANGES
+3. Keep the EXACT same formatting structure, spacing, and layout
+4. Use bullet points (•) for all job descriptions and achievements
+5. Maintain all employment dates, company names, and education details exactly as shown
+6. Only modify the content of job descriptions and skills to match the job requirements
+7. Add relevant keywords from the job description naturally into job descriptions
+8. Quantify achievements where possible with numbers and metrics
+
+WHAT TO TAILOR:
+- Job description bullet points to highlight relevant skills
+- Skills section to emphasize job-relevant capabilities
+- Summary/Objective to align with the target role
+- Achievement descriptions to show relevant impact
+
+WHAT NEVER TO CHANGE:
+- Personal contact information
+- Section headings and structure
+- Company names and employment dates
+- Education details and graduation dates
+- Overall format and layout
+
+Original Resume:
+${resumeText}
+
+Job Description:
+${jobDescription}
+
+Return the complete tailored resume with ALL sections preserved, using the exact same headings and structure as the original. Start with the person's name and contact information exactly as provided.
         `;
         
         const result = await model.generateContent(prompt);

@@ -35,6 +35,27 @@
     text-decoration: none;
     transition: all 0.3s ease;
     letter-spacing: -0.02em;
+    background: var(--highlight-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    position: relative;
+}
+
+.app-title::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--highlight-gradient);
+    transition: width 0.3s ease;
+    border-radius: 1px;
+}
+
+.app-title:hover::after {
+    width: 100%;
 }
 
 .nav-links {

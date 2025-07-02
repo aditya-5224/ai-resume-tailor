@@ -1,5 +1,5 @@
 import React from 'react';
-import { PrinterIcon } from './icons/EditorIcons';
+import './FormattedResumeDisplay.css';
 
 const SectionTitle = ({ title }) => (
   <h2 className="text-xl sm:text-2xl font-semibold text-primary-700 dark:text-primary-300 mt-6 mb-3 border-b-2 border-primary-500 dark:border-primary-400 pb-1 print:text-lg print:mt-4 print:mb-2 print:border-black">
@@ -26,10 +26,7 @@ export function FormattedResumeDisplay({ tailoredResume }) {
   // Log the tailoredResume value for debugging
   console.log('tailoredResume in FormattedResumeDisplay:', tailoredResume);
   
-  const handlePrint = () => {
-    window.print();
-  };
-    // Function to format resume content for download with enhanced formatting
+  // Function to format resume content for download with enhanced formatting
   const formatResumeContent = (content) => {
     if (!content) return '';
     
@@ -396,18 +393,12 @@ export function FormattedResumeDisplay({ tailoredResume }) {
           <div className="flex">
             <button
               onClick={handleDownload}
-              className="px-4 py-2 bg-primary-600 text-white rounded hover:bg-primary-700 transition-colors flex items-center mr-2"
+              className="download-button"
             >
-              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <svg className="download-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
               Download Resume
-            </button>
-            <button
-              onClick={handlePrint}
-              className="px-4 py-2 bg-primary-600 text-white rounded hover:bg-primary-700 transition-colors flex items-center"
-            >
-              <PrinterIcon className="w-5 h-5 mr-2" /> Print
             </button>
           </div>
         </div>

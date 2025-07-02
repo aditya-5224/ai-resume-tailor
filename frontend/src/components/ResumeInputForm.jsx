@@ -1,6 +1,8 @@
 import React, { useState, useCallback, useRef } from 'react';
 import { UploadIcon } from './icons/EditorIcons';
 import { CheckCircleIcon } from './icons/StatusIcons';
+import { ClassicLoader } from './ClassicLoader';
+import { LoadingOverlay } from './LoadingOverlay';
 import './ResumeInputForm.css';
 
 export function ResumeInputForm({
@@ -58,38 +60,46 @@ export function ResumeInputForm({
   const isFileUploaded = !!fileName && !isProcessingFile && appState !== 'ERROR';
 
   return (
-    <div className="resume-form-container">
-      <div className="resume-form">
-        <div className="form-grid">
-          <div className="form-section upload-section">
-            <label htmlFor="resume-upload" className="form-label">
-              Upload Your Resume (.docx)
-            </label>
-            <div
-              onDragOver={handleDragOver}
-              onDragLeave={handleDragLeave}
-              onDrop={handleDrop}
-              className={`upload-area ${isDragging ? 'shine-effect' : ''}`}
-            >
-              {isProcessingFile ? (
-                <div className="upload-content">
-                  <UploadIcon className="upload-icon spinning" />
-                  <p className="upload-text">Processing file...</p>
-                </div>
-              ) : isFileUploaded ? (
-                <div className="upload-content">
-                  <CheckCircleIcon className="upload-icon success" />
-                  <p className="upload-text">File ready: {fileName}</p>
-                  <p className="upload-subtitle">Click to change</p>
-                </div>
-              ) : (
-                <div className="upload-content">
-                  <UploadIcon className="upload-icon" />
-                  <div className="upload-text-container">
-                    <label className="upload-label">
-                      <span className="upload-link">
-                        Choose a file
-                      </span>
+    <>
+      <LoadingOverlay 
+        isVisible={isLoading} 
+        text="Tailoring your resume with AI magic..." 
+        size="large" 
+      />
+      
+      <div className="resume-form-container">
+        <div className="resume-form">
+          <div className="form-grid">
+            <div className="form-section upload-section">
+              <label htmlFor="resume-upload" className="form-label">
+                Upload Your Resume (.docx)
+              </label>
+              <div
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                onClick={() => fileInputRef.current?.click()}
+                className={`upload-area ${isDragging ? 'shine-effect' : ''}`}
+              >
+                {isProcessingFile ? (
+                  <div className="upload-content">
+                    <UploadIcon className="upload-icon spinning" />
+                    <p className="upload-text">Processing file...</p>
+                  </div>
+                ) : isFileUploaded ? (
+                  <div className="upload-content">
+                    <CheckCircleIcon className="upload-icon success" />
+                    <p className="upload-text">File ready: {fileName}</p>
+                    <p className="upload-subtitle">Click anywhere to change</p>
+                  </div>
+                ) : (
+                  <div className="upload-content">
+                    <UploadIcon className="upload-icon" />
+                    <div className="upload-text-container">
+                      <p className="upload-text">
+                        Drag and drop your resume here, or{' '}
+                        <span className="upload-link">click to browse</span>
+                      </p>
                       <input 
                         type="file" 
                         className="hidden" 
@@ -98,47 +108,50 @@ export function ResumeInputForm({
                         ref={fileInputRef}
                         id="resume-upload"
                       />
-                    </label>
-                    <p className="upload-subtitle">or drag and drop</p>
-                    <p className="upload-subtitle">DOCX up to 10MB</p>
+                      <p className="upload-subtitle">DOCX up to 10MB</p>
+                    </div>
                   </div>
-                </div>
+                )}
+              </div>
+            </div>
+
+            <div className="form-section description-section">
+              <label htmlFor="job-description" className="form-label">
+                Job Description
+              </label>
+              <div className="job-description-container">
+                <textarea
+                  id="job-description"
+                  className="job-description-input"
+                  placeholder="Paste the job description here..."
+                  value={jobDescription}
+                  onChange={(e) => setJobDescription(e.target.value)}
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="button-container">
+            {error && (
+              <div className="error-message">
+                {error.message}
+              </div>
+            )}
+            
+            <button
+              onClick={handleSubmit}
+              disabled={isLoading || !fileName || !jobDescription.trim()}
+              className="tailor-button"
+            >
+              {isLoading ? (
+                <ClassicLoader size="small" text="" variant="ring" />
+              ) : (
+                'Tailor Resume'
               )}
-            </div>
+            </button>
           </div>
-
-          <div className="form-section description-section">
-            <label htmlFor="job-description" className="form-label">
-              Job Description
-            </label>
-            <div className="job-description-container">
-              <textarea
-                id="job-description"
-                className="job-description-input"
-                placeholder="Paste the job description here..."
-                value={jobDescription}
-                onChange={(e) => setJobDescription(e.target.value)}
-              />
-            </div>
-          </div>
-        </div>
-
-        <div className="button-container">
-          {error && (
-            <div className="error-message">
-              {error.message}
-            </div>
-          )}
-          
-          <button
-            onClick={handleSubmit}
-            disabled={isLoading || !fileName || !jobDescription.trim()}
-            className={`tailor-button ${isLoading ? 'disabled' : ''}`}
-          >
-            {isLoading ? 'Processing...' : 'Tailor Resume'}
-          </button>
         </div>
       </div>
-    </div>
+    </>
   );
 }

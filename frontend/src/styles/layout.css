@@ -1,4 +1,4 @@
-/* Reset and base styles */
+/* Professional layout styles */
 *, *::before, *::after {
     margin: 0;
     padding: 0;
@@ -9,6 +9,7 @@ html {
     height: 100%;
     width: 100%;
     overflow-x: hidden;
+    scroll-behavior: smooth;
 }
 
 body {
@@ -16,16 +17,17 @@ body {
     width: 100%;
     overflow-x: hidden;
     position: relative;
+    background: var(--bg-primary);
 }
 
 #root {
-    min-height: 100%;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
     overflow-x: hidden;
 }
 
-/* App layout */
+/* Professional app layout */
 .app {
     min-height: 100vh;
     width: 100vw;
@@ -33,6 +35,7 @@ body {
     flex-direction: column;
     position: relative;
     overflow-x: hidden;
+    background: var(--bg-primary);
 }
 
 .app-content {
@@ -42,55 +45,49 @@ body {
     display: flex;
     flex-direction: column;
     position: relative;
-    padding-top: 1rem;
-    padding-bottom: 3rem; /* Space for footer */
+    padding: var(--spacing-xl) 0 var(--spacing-3xl);
 }
 
 .content-wrapper {
     width: 100%;
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
-    padding: 0 1rem;
+    padding: 0 var(--spacing-lg);
     display: flex;
     flex-direction: column;
-    gap: 2rem;
-    height: calc(100vh - 120px); /* Adjust for navbar and footer */
+    gap: var(--spacing-2xl);
 }
 
-/* Navbar adjustments */
-.navbar {
-    position: sticky;
-    top: 0;
+/* Page content spacing */
+.page-content {
+    flex: 1;
     width: 100%;
-    z-index: 1000;
-}
-
-/* Footer positioning */
-.footer {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    z-index: 1000;
+    position: relative;
+    overflow-x: hidden;
 }
 
 /* Responsive adjustments */
-@media screen and (max-width: 1024px) {
+@media (max-width: 1024px) {
     .content-wrapper {
-        padding: 0 0.75rem;
-        height: calc(100vh - 110px);
+        padding: 0 var(--spacing-md);
+        gap: var(--spacing-xl);
     }
 }
 
-@media screen and (max-width: 768px) {
+@media (max-width: 768px) {
     .app-content {
-        padding-top: 0.5rem;
-        padding-bottom: 2.5rem;
+        padding: var(--spacing-lg) 0 var(--spacing-2xl);
     }
 
     .content-wrapper {
-        padding: 0 0.5rem;
-        height: calc(100vh - 100px);
+        padding: 0 var(--spacing-sm);
+        gap: var(--spacing-lg);
+    }
+}
+
+@media (max-width: 640px) {
+    .content-wrapper {
+        padding: 0 var(--spacing-xs);
     }
 }
 
@@ -104,14 +101,26 @@ body {
     display: none;
 }
 
-/* Prevent horizontal overflow */
+/* Prevent horizontal overflow for all elements */
 .content-container,
 .resume-form-container,
 .resume-form,
 .form-section,
 .upload-area,
-.job-description-container,
-.job-description-input {
+.job-description-container {
     max-width: 100%;
     overflow-x: hidden;
+}
+
+/* Background pattern - subtle and professional */
+.pattern-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 25% 25%, rgba(49, 130, 206, 0.02) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(49, 130, 206, 0.01) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: -1;
 }

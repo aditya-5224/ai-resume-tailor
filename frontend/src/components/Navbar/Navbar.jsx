@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import ThemeToggle from '../ThemeToggle/ThemeToggle';
 import './Navbar.css';
 
 const Navbar = ({ darkMode, toggleDarkMode }) => {
@@ -18,9 +19,7 @@ const Navbar = ({ darkMode, toggleDarkMode }) => {
                     <Link to="/" className={isActive('/')}>Home</Link>
                     <Link to="/about" className={isActive('/about')}>About</Link>
                     <Link to="/contact" className={isActive('/contact')}>Contact</Link>
-                    <button className="theme-toggle" onClick={toggleDarkMode}>
-                        {darkMode ? '☀️' : '🌙'}
-                    </button>
+                    <ThemeToggle isDark={darkMode} onToggle={toggleDarkMode} />
                 </div>
             </div>
         </nav>

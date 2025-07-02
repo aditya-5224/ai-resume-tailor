@@ -1,93 +1,53 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { SunIcon, MoonIcon } from './ThemeIcons';
+import React from 'react';
 import './ThemeToggle.css';
 
 const ThemeToggle = ({ isDark, onToggle }) => {
-  const [isHovered, setIsHovered] = useState(false);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  const handleMouseMove = (event) => {
-    if (!prefersReducedMotion) {
-      const rect = event.currentTarget.getBoundingClientRect();
-      const x = ((event.clientX - rect.left) / rect.width) * 100;
-      const y = ((event.clientY - rect.top) / rect.height) * 100;
-      setMousePosition({ x, y });
-    }
-  };
-
-  const springTransition = {
-    type: "spring",
-    stiffness: 400,
-    damping: 30,
-    mass: 0.5,
-    duration: 0.35
-  };
-
   return (
-    <motion.div
-      className="theme-toggle-wrapper"
-      onHoverStart={() => setIsHovered(true)}
-      onHoverEnd={() => setIsHovered(false)}
-      onMouseMove={handleMouseMove}
-      animate={{ scale: isHovered ? 1.02 : 1 }}
-      transition={{ duration: 0.2 }}
-      style={{
-        '--mouse-x': `${mousePosition.x}%`,
-        '--mouse-y': `${mousePosition.y}%`
-      }}
-    >
-      <button
-        className={`theme-toggle ${isDark ? 'dark' : 'light'}`}
-        onClick={onToggle}
-        aria-label={`Switch to ${isDark ? 'light' : 'dark'} mode`}
-        role="switch"
-        aria-checked={isDark}
-      >
-        <div className="toggle-track">
-          <div className="toggle-icons">
-            <span className={`icon-wrapper ${!isDark ? 'active' : ''}`}>
-              <SunIcon className="theme-icon sun" />
-            </span>
-            <span className={`icon-wrapper ${isDark ? 'active' : ''}`}>
-              <MoonIcon className="theme-icon moon" />
-            </span>
-          </div>
+    <div className="container">
+      <label className="switch">
+        <input 
+          type="checkbox" 
+          id="toggle"
+          checked={isDark}
+          onChange={onToggle}
+          aria-label={`Switch to ${isDark ? 'light' : 'dark'} mode`}
+        />
+        <span className="slider">
+          <span className="slider-icon">
+            {isDark ? (
+              <svg className="moon-icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+              </svg>
+            ) : (
+              <svg className="sun-icon" viewBox="0 0 24 24" fill="currentColor">
+                <circle cx="12" cy="12" r="5" />
+                <path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
+              </svg>
+            )}
+          </span>
           
-          <AnimatePresence>
-            <motion.div
-              className="toggle-handle"
-              layout
-              initial={false}
-              animate={{
-                x: isDark ? 'calc(100% - var(--handle-size) - var(--handle-margin) * 2)' : 0,
-                rotate: isDark ? 360 : 0
-              }}
-              transition={prefersReducedMotion ? { duration: 0 } : springTransition}
-            >
-              <div className="handle-glass-effect">
-                <div className="handle-shine"></div>
-                <div className="handle-reflection"></div>
-                <div className="handle-gradient"></div>
-              </div>
-              <motion.div 
-                className="handle-icon"
-                animate={{
-                  scale: [1, 1.2, 1],
-                  rotate: isDark ? [0, 180, 360] : [360, 180, 0]
-                }}
-                transition={{ duration: 0.5 }}
-              >
-                {isDark ? <MoonIcon /> : <SunIcon />}
-              </motion.div>
-            </motion.div>
-          </AnimatePresence>
-
-          <div className="track-glass-effect"></div>
-        </div>
-      </button>
-    </motion.div>
+          {/* Background decorations */}
+          <div className="slider-decorations">
+            {isDark ? (
+              // Stars for dark mode
+              <>
+                <span className="star star-1">★</span>
+                <span className="star star-2">✦</span>
+                <span className="star star-3">✧</span>
+                <span className="star star-4">⋆</span>
+              </>
+            ) : (
+              // Clouds for light mode
+              <>
+                <span className="cloud cloud-1">☁️</span>
+                <span className="cloud cloud-2">☁️</span>
+                <span className="cloud cloud-3">☁️</span>
+              </>
+            )}
+          </div>
+        </span>
+      </label>
+    </div>
   );
 };
 

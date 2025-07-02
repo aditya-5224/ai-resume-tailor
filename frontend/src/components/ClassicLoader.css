@@ -1,0 +1,431 @@
+/* Classic Loader with Anime Center Effects */
+.classic-loader-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.classic-loader {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+/* Size variants */
+.classic-loader-small {
+  width: 40px;
+  height: 40px;
+}
+
+.classic-loader-medium {
+  width: 60px;
+  height: 60px;
+}
+
+.classic-loader-large {
+  width: 80px;
+  height: 80px;
+}
+
+/* Main ring with formal professional gradient */
+.loader-ring {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    #1e40af 90deg,
+    #1e3a8a 180deg,
+    #374151 270deg,
+    transparent 360deg
+  );
+  mask: radial-gradient(circle at center, transparent 60%, black 65%);
+  animation: loader-spin 2s linear infinite;
+  filter: drop-shadow(0 0 6px rgba(30, 64, 175, 0.2));
+}
+
+/* Center pattern container */
+.loader-center-pattern {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 50%;
+  height: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Classic formal center core */
+.classic-core {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Central orb - formal and professional */
+.center-orb {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: radial-gradient(circle, #f8fafc, #1e40af);
+  border-radius: 50%;
+  animation: professional-pulse 4s ease-in-out infinite;
+  filter: drop-shadow(0 0 3px rgba(30, 64, 175, 0.4));
+  z-index: 10;
+}
+
+/* Elegant rings around the orb with enhanced animation */
+.elegant-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid rgba(30, 64, 175, 0.25);
+  animation: elegant-orbit 10s linear infinite;
+}
+
+.ring-outer {
+  width: 22px;
+  height: 22px;
+  border-color: rgba(30, 64, 175, 0.3);
+  animation-duration: 15s;
+  animation-name: ring-dance;
+}
+
+.ring-inner {
+  width: 16px;
+  height: 16px;
+  border-color: rgba(55, 65, 81, 0.25);
+  animation-duration: 12s;
+  animation-direction: reverse;
+  animation-name: ring-dance;
+}
+
+/* Formal dots with enhanced positioning animation */
+.formal-dots {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  animation: dots-orbit 20s linear infinite;
+}
+
+.formal-dot {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: rgba(30, 64, 175, 0.7);
+  border-radius: 50%;
+  animation: formal-shimmer 5s ease-in-out infinite;
+  filter: drop-shadow(0 0 1px rgba(30, 64, 175, 0.5));
+}
+
+.dot-1 { top: 20%; left: 50%; transform: translateX(-50%); animation-delay: 0s; }
+.dot-2 { top: 50%; right: 20%; transform: translateY(-50%); animation-delay: -1.25s; }
+.dot-3 { bottom: 20%; left: 50%; transform: translateX(-50%); animation-delay: -2.5s; }
+.dot-4 { top: 50%; left: 20%; transform: translateY(-50%); animation-delay: -3.75s; }
+
+/* Classic symbol with subtle animation */
+.classic-symbol {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 5;
+  animation: symbol-breathe 8s ease-in-out infinite;
+}
+
+.symbol-cross {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  transform: translate(-50%, -50%);
+  animation: cross-rotate 16s linear infinite;
+}
+
+.symbol-cross::before,
+.symbol-cross::after {
+  content: '';
+  position: absolute;
+  background: rgba(248, 250, 252, 0.7);
+  animation: cross-professional-glow 8s ease-in-out infinite;
+}
+
+.symbol-cross::before {
+  top: 50%;
+  left: 0;
+  width: 6px;
+  height: 1px;
+  transform: translateY(-50%);
+}
+
+.symbol-cross::after {
+  top: 0;
+  left: 50%;
+  width: 1px;
+  height: 6px;
+  transform: translateX(-50%);
+}
+
+.symbol-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 2px;
+  height: 2px;
+  background: rgba(248, 250, 252, 0.9);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  animation: center-professional-twinkle 6s ease-in-out infinite alternate;
+}
+
+/* Dots variant */
+.loader-dots {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  animation: dot-bounce 1.4s ease-in-out infinite both;
+  filter: drop-shadow(0 0 4px rgba(59, 130, 246, 0.4));
+}
+
+.dot:nth-child(1) { animation-delay: -0.32s; }
+.dot:nth-child(2) { animation-delay: -0.16s; }
+.dot:nth-child(3) { animation-delay: 0s; }
+
+/* Loader text */
+.classic-loader-text {
+  margin: 0;
+  color: #64748b;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-align: center;
+  animation: text-fade 2s ease-in-out infinite alternate;
+}
+
+/* Animations */
+@keyframes loader-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes professional-pulse {
+  0%, 100% { 
+    transform: scale(1);
+    filter: drop-shadow(0 0 3px rgba(30, 64, 175, 0.4));
+  }
+  25% { 
+    transform: scale(1.05);
+    filter: drop-shadow(0 0 4px rgba(30, 64, 175, 0.5));
+  }
+  50% { 
+    transform: scale(1.1);
+    filter: drop-shadow(0 0 5px rgba(30, 64, 175, 0.6));
+  }
+  75% { 
+    transform: scale(1.05);
+    filter: drop-shadow(0 0 4px rgba(30, 64, 175, 0.5));
+  }
+}
+
+@keyframes ring-dance {
+  0% { 
+    transform: rotate(0deg) scale(1);
+    opacity: 0.25;
+  }
+  25% {
+    opacity: 0.4;
+    transform: rotate(90deg) scale(1.02);
+  }
+  50% {
+    opacity: 0.5;
+    transform: rotate(180deg) scale(1);
+  }
+  75% {
+    opacity: 0.4;
+    transform: rotate(270deg) scale(0.98);
+  }
+  100% { 
+    transform: rotate(360deg) scale(1);
+    opacity: 0.25;
+  }
+}
+
+@keyframes elegant-orbit {
+  0% { 
+    transform: rotate(0deg);
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.6;
+  }
+  100% { 
+    transform: rotate(360deg);
+    opacity: 0.3;
+  }
+}
+
+@keyframes dots-orbit {
+  0% { 
+    transform: rotate(0deg);
+  }
+  100% { 
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes formal-shimmer {
+  0%, 100% { 
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  25% { 
+    opacity: 0.7;
+    transform: scale(1.1);
+  }
+  50% { 
+    opacity: 1;
+    transform: scale(1.2);
+  }
+  75% { 
+    opacity: 0.7;
+    transform: scale(1.1);
+  }
+}
+
+@keyframes symbol-breathe {
+  0%, 100% { 
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  50% { 
+    transform: scale(1.05);
+    opacity: 1;
+  }
+}
+
+@keyframes cross-rotate {
+  0% { 
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  100% { 
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+@keyframes cross-professional-glow {
+  0%, 100% { 
+    opacity: 0.7;
+    filter: drop-shadow(0 0 1px rgba(248, 250, 252, 0.5));
+  }
+  33% { 
+    opacity: 0.9;
+    filter: drop-shadow(0 0 2px rgba(248, 250, 252, 0.7));
+  }
+  66% { 
+    opacity: 1;
+    filter: drop-shadow(0 0 3px rgba(248, 250, 252, 0.9));
+  }
+}
+
+@keyframes center-professional-twinkle {
+  0% { 
+    opacity: 0.8;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% { 
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.2);
+  }
+}
+
+@keyframes dot-bounce {
+  0%, 80%, 100% {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+  40% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+}
+
+@keyframes text-fade {
+  0% { opacity: 0.6; }
+  100% { opacity: 1; }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .classic-loader-text {
+    color: #94a3b8;
+  }
+  
+  .loader-ring {
+    background: conic-gradient(
+      from 0deg,
+      transparent 0deg,
+      #3b82f6 90deg,
+      #1e40af 180deg,
+      #475569 270deg,
+      transparent 360deg
+    );
+    filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.3));
+  }
+  
+  .center-orb {
+    background: radial-gradient(circle, #f1f5f9, #3b82f6);
+    filter: drop-shadow(0 0 4px rgba(59, 130, 246, 0.6));
+  }
+  
+  .formal-dot {
+    background: rgba(59, 130, 246, 0.8);
+    filter: drop-shadow(0 0 2px rgba(59, 130, 246, 0.6));
+  }
+  
+  .dot {
+    background: linear-gradient(135deg, #60a5fa, #a78bfa);
+    filter: drop-shadow(0 0 6px rgba(96, 165, 250, 0.5));
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .classic-loader-small { width: 35px; height: 35px; }
+  .classic-loader-medium { width: 50px; height: 50px; }
+  .classic-loader-large { width: 65px; height: 65px; }
+  
+  .classic-loader-text {
+    font-size: 0.8rem;
+  }
+  
+  .center-orb {
+    width: 8px;
+    height: 8px;
+  }
+  
+  .ring-outer { width: 18px; height: 18px; }
+  .ring-inner { width: 14px; height: 14px; }
+  
+  .symbol-cross {
+    width: 5px;
+    height: 5px;
+  }
+}

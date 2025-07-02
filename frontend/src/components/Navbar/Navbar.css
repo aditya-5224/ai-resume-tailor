@@ -6,191 +6,104 @@
 
 .navbar {
     width: 100%;
-    padding: 1rem;
-    background: linear-gradient(
-        to right,
-        rgba(255, 255, 255, 0.08),
-        rgba(255, 255, 255, 0.12),
-        rgba(255, 255, 255, 0.08)
-    );
-    backdrop-filter: blur(12px) saturate(180%);
-    -webkit-backdrop-filter: blur(12px) saturate(180%);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    padding: var(--spacing-md) 0;
+    background: var(--navbar-bg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border-bottom: 1px solid var(--border-color);
     position: sticky;
     top: 0;
     z-index: 1000;
     transition: all 0.3s ease;
-    box-shadow: 
-        0 1px 3px rgba(0, 0, 0, 0.05),
-        0 1px 2px rgba(0, 0, 0, 0.1);
-}
-
-.navbar::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(
-        90deg,
-        rgba(147, 197, 253, 0.05),
-        rgba(196, 181, 253, 0.05),
-        rgba(167, 139, 250, 0.05)
-    );
-    pointer-events: none;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
 .navbar-container {
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 1rem;
-    position: relative;
-    z-index: 1;
+    padding: 0 var(--spacing-lg);
 }
 
 .app-title {
     color: var(--text-primary);
     font-size: 1.5rem;
-    font-weight: 600;
+    font-weight: 700;
+    font-family: var(--font-family-heading);
     text-decoration: none;
     transition: all 0.3s ease;
-    background: linear-gradient(
-        135deg,
-        var(--accent-color),
-        var(--accent-secondary-color)
-    );
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    letter-spacing: -0.02em;
 }
 
 .nav-links {
     display: flex;
     align-items: center;
-    gap: 1.5rem;
-    position: relative;
+    gap: var(--spacing-lg);
 }
 
 .nav-link {
-    color: var(--text-primary);
+    color: var(--text-secondary);
     text-decoration: none;
-    font-size: 1rem;
+    font-size: 0.95rem;
     font-weight: 500;
     transition: all 0.3s ease;
-    opacity: 0.85;
-    padding: 0.5rem 0.75rem;
-    border-radius: 6px;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--border-radius-sm);
     position: relative;
 }
 
 .nav-link:hover {
-    opacity: 1;
-    background: rgba(255, 255, 255, 0.08);
-    transform: translateY(-1px);
+    color: var(--text-primary);
+    background: var(--glass-bg);
 }
 
 .nav-link.active {
-    opacity: 1;
-    font-weight: 600;
-    background: rgba(255, 255, 255, 0.1);
     color: var(--accent-color);
+    font-weight: 600;
+    background: var(--glass-bg);
 }
 
 .nav-link.active::after {
     content: '';
     position: absolute;
     bottom: -2px;
-    left: 0;
-    width: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60%;
     height: 2px;
-    background: linear-gradient(
-        90deg,
-        var(--accent-color),
-        var(--accent-secondary-color)
-    );
-    border-radius: 2px;
-}
-
-.theme-toggle {
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 1.25rem;
-    padding: 0.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-
-.theme-toggle:hover {
-    transform: translateY(-2px);
-    background: rgba(255, 255, 255, 0.12);
-    box-shadow: 
-        0 4px 8px rgba(0, 0, 0, 0.05),
-        0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-/* Add these variables to your root/theme */
-:root {
-    --accent-color: #4A90E2;
-    --accent-secondary-color: #5C6BC0;
-    --text-primary: #2C3E50;
-}
-
-/* Dark mode styles */
-.dark-mode {
-    background: linear-gradient(
-        to right,
-        rgba(0, 0, 0, 0.4),
-        rgba(0, 0, 0, 0.5),
-        rgba(0, 0, 0, 0.4)
-    );
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.dark-mode::before {
-    background: linear-gradient(
-        90deg,
-        rgba(147, 197, 253, 0.03),
-        rgba(196, 181, 253, 0.03),
-        rgba(167, 139, 250, 0.03)
-    );
-}
-
-.dark-mode .app-title {
-    --accent-color: #60A5FA;
-    --accent-secondary-color: #818CF8;
-}
-
-.dark-mode .nav-link {
-    color: rgba(255, 255, 255, 0.9);
-}
-
-.dark-mode .nav-link:hover {
-    background: rgba(255, 255, 255, 0.05);
-}
-
-.dark-mode .nav-link.active {
-    background: rgba(255, 255, 255, 0.08);
-    color: #60A5FA;
+    background: var(--accent-color);
+    border-radius: 1px;
 }
 
 /* Responsive design */
-@media (max-width: 640px) {
+@media (max-width: 768px) {
     .navbar-container {
-        padding: 0 0.5rem;
+        padding: 0 var(--spacing-md);
     }
 
     .nav-links {
-        gap: 1rem;
+        gap: var(--spacing-md);
+    }
+
+    .app-title {
+        font-size: 1.375rem;
+    }
+
+    .nav-link {
+        font-size: 0.9rem;
+        padding: var(--spacing-xs);
+    }
+}
+
+@media (max-width: 640px) {
+    .navbar-container {
+        padding: 0 var(--spacing-sm);
+    }
+
+    .nav-links {
+        gap: var(--spacing-sm);
     }
 
     .app-title {
@@ -198,41 +111,15 @@
     }
 
     .nav-link {
-        font-size: 0.938rem;
-        padding: 0.375rem 0.5rem;
-    }
-}
-
-@media (max-width: 768px) {
-    .nav-links {
-        gap: 1rem;
-    }
-    
-    .nav-link {
-        font-size: 0.938rem;
-        padding: 0.375rem 0.5rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .nav-links {
-        gap: 0.75rem;
-    }
-    
-    .nav-link {
         font-size: 0.875rem;
-        padding: 0.25rem 0.5rem;
+        padding: var(--spacing-xs);
     }
 }
 
 /* Glass effect enhancement for modern browsers */
-@supports (backdrop-filter: blur(12px)) {
+@supports (backdrop-filter: blur(16px)) {
     .navbar {
-        background: rgba(255, 255, 255, 0.08);
-    }
-    
-    .dark-mode {
-        background: rgba(0, 0, 0, 0.3);
+        background: var(--navbar-bg);
     }
 }
 
@@ -240,14 +127,19 @@
 @media (prefers-reduced-motion: reduce) {
     .navbar,
     .nav-link,
-    .theme-toggle,
     .app-title {
         transition: none;
     }
+}
 
-    .nav-link:hover,
-    .theme-toggle:hover {
-        transform: none;
+/* High contrast mode */
+@media (prefers-contrast: more) {
+    .navbar {
+        border-bottom-width: 2px;
+    }
+    
+    .nav-link.active::after {
+        height: 3px;
     }
 }
 

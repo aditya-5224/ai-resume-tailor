@@ -11,53 +11,89 @@
 
 :root {
     --transition-speed: 0.3s;
-    --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    --glass-blur: blur(12px);
-    --glass-border: 1px solid rgba(255, 255, 255, 0.15);
+    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    --font-family-heading: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    --glass-blur: blur(16px);
+    --glass-border: 1px solid rgba(255, 255, 255, 0.08);
     --glass-shine: linear-gradient(
         120deg,
         rgba(255,255,255,0) 30%,
-        rgba(255,255,255,0.15) 38%,
-        rgba(255,255,255,0.3) 42%,
-        rgba(255,255,255,0.15) 46%,
+        rgba(255,255,255,0.08) 38%,
+        rgba(255,255,255,0.15) 42%,
+        rgba(255,255,255,0.08) 46%,
         rgba(255,255,255,0) 54%
     );
+    --border-radius-sm: 8px;
+    --border-radius-md: 12px;
+    --border-radius-lg: 16px;
+    --border-radius-xl: 20px;
+    --spacing-xs: 0.5rem;
+    --spacing-sm: 0.75rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+    --spacing-2xl: 2.5rem;
+    --spacing-3xl: 3rem;
 }
 
-/* Light theme with enhanced glass effects */
+/* Light theme - Refined professional palette */
 .light-mode {
-    --bg-primary: #f0f4f8;
+    --bg-primary: #fafbfc;
     --bg-secondary: #ffffff;
-    --glass-bg: rgba(255, 255, 255, 0.7);
-    --glass-bg-hover: rgba(255, 255, 255, 0.8);
-    --glass-button-bg: rgba(255, 255, 255, 0.6);
-    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    --glass-shadow-hover: 0 8px 32px rgba(0, 0, 0, 0.15);
-    --text-primary: #1a1a1a;
-    --text-secondary: #4a4a4a;
-    --border-color: rgba(0, 0, 0, 0.1);
-    --navbar-bg: rgba(255, 255, 255, 0.8);
-    --navbar-text: #1a1a1a;
-    --input-bg: rgba(255, 255, 255, 0.9);
+    --glass-bg: rgba(255, 255, 255, 0.85);
+    --glass-bg-hover: rgba(255, 255, 255, 0.92);
+    --glass-button-bg: rgba(255, 255, 255, 0.75);
+    --glass-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    --glass-shadow-hover: 0 8px 32px rgba(0, 0, 0, 0.12);
+    --text-primary: #1a202c;
+    --text-secondary: #4a5568;
+    --text-tertiary: #718096;
+    --border-color: rgba(0, 0, 0, 0.06);
+    --border-color-hover: rgba(0, 0, 0, 0.12);
+    --navbar-bg: rgba(255, 255, 255, 0.88);
+    --navbar-text: #1a202c;
+    --input-bg: rgba(255, 255, 255, 0.95);
+    --input-text: #2d3748;
+    --input-placeholder: #a0aec0;
     --button-highlight: rgba(255, 255, 255, 0.2);
+    --accent-color: #3182ce;
+    --accent-hover: #2c5aa0;
+    --accent-secondary-color: #4299e1;
+    --success-color: #38a169;
+    --error-color: #e53e3e;
+    --error-bg-color: rgba(254, 226, 226, 0.8);
+    --card-bg: rgba(255, 255, 255, 0.9);
+    --shadow-color: rgba(0, 0, 0, 0.05);
 }
 
-/* Dark theme with enhanced glass effects */
+/* Dark theme - Refined professional palette */
 .dark-mode {
-    --bg-primary: #0a0c10;
-    --bg-secondary: #1a1f25;
-    --glass-bg: rgba(30, 35, 45, 0.7);
-    --glass-bg-hover: rgba(40, 45, 55, 0.8);
-    --glass-button-bg: rgba(45, 50, 60, 0.6);
-    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    --glass-shadow-hover: 0 8px 32px rgba(0, 0, 0, 0.4);
-    --text-primary: #ffffff;
-    --text-secondary: #a0a0a0;
-    --border-color: rgba(255, 255, 255, 0.1);
-    --navbar-bg: rgba(30, 35, 45, 0.8);
-    --navbar-text: #ffffff;
-    --input-bg: rgba(30, 35, 45, 0.9);
+    --bg-primary: #0f1419;
+    --bg-secondary: #1a202c;
+    --glass-bg: rgba(26, 32, 44, 0.85);
+    --glass-bg-hover: rgba(45, 55, 72, 0.92);
+    --glass-button-bg: rgba(45, 55, 72, 0.75);
+    --glass-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    --glass-shadow-hover: 0 8px 32px rgba(0, 0, 0, 0.35);
+    --text-primary: #f7fafc;
+    --text-secondary: #e2e8f0;
+    --text-tertiary: #a0aec0;
+    --border-color: rgba(255, 255, 255, 0.06);
+    --border-color-hover: rgba(255, 255, 255, 0.12);
+    --navbar-bg: rgba(26, 32, 44, 0.88);
+    --navbar-text: #f7fafc;
+    --input-bg: rgba(45, 55, 72, 0.95);
+    --input-text: #e2e8f0;
+    --input-placeholder: #718096;
     --button-highlight: rgba(255, 255, 255, 0.1);
+    --accent-color: #4299e1;
+    --accent-hover: #63b3ed;
+    --accent-secondary-color: #3182ce;
+    --success-color: #48bb78;
+    --error-color: #f56565;
+    --error-bg-color: rgba(254, 178, 178, 0.1);
+    --card-bg: rgba(45, 55, 72, 0.9);
+    --shadow-color: rgba(0, 0, 0, 0.2);
 }
 
 /* Base styles */
@@ -80,6 +116,8 @@ body {
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    font-weight: 400;
+    letter-spacing: -0.01em;
 }
 
 .app-container {
@@ -88,54 +126,109 @@ body {
     transition: background-color var(--transition-speed);
 }
 
-/* Form and input styles */
+/* Typography scale */
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-family-heading);
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    line-height: 1.2;
+    margin: 0;
+    color: var(--text-primary);
+}
+
+h1 { font-size: 2.5rem; }
+h2 { font-size: 2rem; }
+h3 { font-size: 1.5rem; }
+h4 { font-size: 1.25rem; }
+h5 { font-size: 1.125rem; }
+h6 { font-size: 1rem; }
+
+/* Form and input styles - Professional refinements */
 input, textarea {
     width: 100%;
-    padding: 0.75rem 1rem;
+    padding: var(--spacing-sm) var(--spacing-md);
     font-size: 1rem;
+    font-family: inherit;
     background-color: var(--input-bg);
     color: var(--input-text);
     border: 1px solid var(--border-color);
-    border-radius: 6px;
+    border-radius: var(--border-radius-sm);
     transition: all var(--transition-speed);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 input::placeholder, textarea::placeholder {
     color: var(--input-placeholder);
+    font-weight: 400;
 }
 
 input:focus, textarea:focus {
     outline: none;
-    border-color: #4a90e2;
-    box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1), 0 1px 3px rgba(0, 0, 0, 0.1);
+    background-color: var(--bg-secondary);
 }
 
 .main-content {
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
-    padding: 2rem 1.5rem;
+    padding: var(--spacing-2xl) var(--spacing-lg);
 }
 
-/* Card styles */
+/* Professional card styles */
 .card {
     background-color: var(--card-bg);
-    border-radius: 8px;
-    padding: 1.5rem;
-    box-shadow: 0 2px 4px var(--shadow-color);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-2xl);
+    box-shadow: var(--glass-shadow);
+    border: 1px solid var(--border-color);
     transition: all var(--transition-speed);
 }
 
-/* Button styles */
+.card:hover {
+    box-shadow: var(--glass-shadow-hover);
+    border-color: var(--border-color-hover);
+}
+
+/* Professional button styles */
 .button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 0.75rem 1.5rem;
+    padding: var(--spacing-sm) var(--spacing-lg);
     font-size: 1rem;
     font-weight: 500;
-    border-radius: 6px;
+    font-family: inherit;
+    border-radius: var(--border-radius-sm);
     cursor: pointer;
     transition: all 0.2s ease;
+    border: 1px solid transparent;
+    text-decoration: none;
+    letter-spacing: -0.01em;
+}
+
+.button-primary {
+    background-color: var(--accent-color);
+    color: white;
+    border-color: var(--accent-color);
+}
+
+.button-primary:hover {
+    background-color: var(--accent-hover);
+    border-color: var(--accent-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(49, 130, 206, 0.25);
+}
+
+.button-secondary {
+    background-color: transparent;
+    color: var(--text-primary);
+    border-color: var(--border-color);
+}
+
+.button-secondary:hover {
+    background-color: var(--glass-bg);
+    border-color: var(--border-color-hover);
 }
 
 .button-glow {
@@ -270,36 +363,86 @@ input:focus, textarea:focus {
     gap: 2rem;
 }
 
-/* Animations */
-@keyframes shine {
-    from {
-        left: -100%;
-    }
-    to {
-        left: 100%;
+/* Professional selection and focus states */
+::selection {
+    background: rgba(49, 130, 206, 0.2);
+    color: var(--text-primary);
+}
+
+::-moz-selection {
+    background: rgba(49, 130, 206, 0.2);
+    color: var(--text-primary);
+}
+
+/* Professional focus management */
+*:focus {
+    outline: none;
+}
+
+*:focus-visible {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
+}
+
+/* Professional link styles */
+a {
+    color: var(--accent-color);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+a:hover {
+    color: var(--accent-hover);
+}
+
+/* Professional scrollbar styling */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--border-color-hover);
+}
+
+/* Ensure consistent font rendering */
+* {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Professional animations */
+@media (prefers-reduced-motion: no-preference) {
+    html {
+        scroll-behavior: smooth;
     }
 }
 
-/* Media Queries */
-@media (max-width: 768px) {
-    .container {
-        padding: 0 16px;
+/* Print styles for professional documents */
+@media print {
+    * {
+        background: white !important;
+        color: black !important;
+        box-shadow: none !important;
+        text-shadow: none !important;
     }
-
-    .content-section {
-        padding: 1.5rem 0;
-        gap: 1.5rem;
+    
+    .navbar,
+    .footer {
+        display: none !important;
     }
-
-    .glass-button {
-        padding: 10px 20px;
-        font-size: 0.95rem;
-    }
-}
-
-/* Accessibility */
-@media (prefers-reduced-motion: reduce) {
-    .glass-button::before {
-        animation: none;
+    
+    .app-content {
+        padding: 0 !important;
+        margin: 0 !important;
     }
 }

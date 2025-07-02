@@ -1,65 +1,105 @@
-/* Styling for resume preview */
+/* Professional Resume Display Styling */
+.resume-display-container {
+    width: 100%;
+    max-width: min(900px, calc(100vw - 2rem));
+    margin: var(--spacing-2xl) auto 0;
+    padding: 0 var(--spacing-md);
+}
+
+.formatted-resume-wrapper {
+    background: var(--bg-secondary);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-2xl);
+    box-shadow: var(--glass-shadow);
+    border: 1px solid var(--border-color);
+    font-family: 'Georgia', 'Times New Roman', serif;
+    line-height: 1.6;
+    color: var(--text-primary);
+}
+
+/* Typography hierarchy */
 .formatted-resume h1 {
-  font-size: 18pt;
-  font-weight: bold;
-  text-align: center;
-  margin: 0 0 10pt;
+    font-size: 1.75rem;
+    font-weight: 700;
+    font-family: var(--font-family-heading);
+    text-align: center;
+    margin: 0 0 var(--spacing-md);
+    color: var(--text-primary);
+    letter-spacing: -0.01em;
 }
 
 .formatted-resume h2 {
-  font-size: 14pt;
-  font-weight: bold;
-  margin: 12pt 0 6pt;
-  border-bottom: 1pt solid #777;
-  padding-bottom: 1pt;
+    font-size: 1.25rem;
+    font-weight: 600;
+    font-family: var(--font-family-heading);
+    margin: var(--spacing-xl) 0 var(--spacing-sm);
+    padding-bottom: var(--spacing-xs);
+    border-bottom: 2px solid var(--accent-color);
+    color: var(--accent-color);
+    letter-spacing: -0.01em;
 }
 
 .formatted-resume h3 {
-  font-size: 12pt;
-  font-weight: bold;
-  margin: 10pt 0 4pt;
+    font-size: 1.1rem;
+    font-weight: 600;
+    font-family: var(--font-family-heading);
+    margin: var(--spacing-lg) 0 var(--spacing-xs);
+    color: var(--text-primary);
 }
 
 .formatted-resume .section {
-  margin-bottom: 12pt;
+    margin-bottom: var(--spacing-xl);
 }
 
 .formatted-resume .contact-info {
-  text-align: center;
-  margin-bottom: 10pt;
+    text-align: center;
+    margin-bottom: var(--spacing-xl);
+    padding: var(--spacing-md);
+    background: var(--glass-bg);
+    border-radius: var(--border-radius-sm);
+    border: 1px solid var(--border-color);
 }
 
 .formatted-resume .job-title {
-  font-weight: bold;
+    font-weight: 600;
+    color: var(--text-primary);
 }
 
 .formatted-resume .company-details {
-  display: flex;
-  justify-content: space-between;
-  margin: 4pt 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: var(--spacing-xs) 0;
+    padding: var(--spacing-xs) 0;
 }
 
 .formatted-resume .company-name {
-  font-weight: bold;
+    font-weight: 600;
+    color: var(--text-primary);
 }
 
 .formatted-resume .job-date {
-  font-style: italic;
+    font-style: italic;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
 }
 
 .formatted-resume ul,
 .formatted-resume ol {
-  margin: 4pt 0 8pt;
-  padding-left: 24pt;
+    margin: var(--spacing-sm) 0 var(--spacing-md);
+    padding-left: var(--spacing-xl);
 }
 
 .formatted-resume li {
-  margin-bottom: 2pt;
+    margin-bottom: var(--spacing-xs);
+    line-height: 1.7;
+    color: var(--text-primary);
 }
 
 .formatted-resume table {
-  width: 100%;
-  border-collapse: collapse;
+    width: 100%;
+    border-collapse: collapse;
+    margin: var(--spacing-md) 0;
 }
 
 .formatted-resume td,
@@ -94,4 +134,108 @@
   .formatted-resume th {
     color: black !important;
   }
+}
+
+/* Download button styling to match the Tailor Resume button */
+.download-button {
+    width: auto;
+    min-width: 200px;
+    max-width: 280px;
+    padding: 1rem 2rem;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.025em;
+    color: #ffffff;
+    background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 50%, #6D28D9 100%);
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    box-shadow: 
+        0 8px 32px rgba(139, 92, 246, 0.25),
+        0 4px 16px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 56px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    text-decoration: none;
+}
+
+/* Professional shine effect for download button */
+.download-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.3),
+        transparent
+    );
+    transition: left 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1;
+}
+
+.download-button > * {
+    position: relative;
+    z-index: 2;
+}
+
+.download-button:hover {
+    transform: translateY(-3px) scale(1.02);
+    background: linear-gradient(135deg, #A78BFA 0%, #8B5CF6 50%, #7C3AED 100%);
+    box-shadow: 
+        0 12px 40px rgba(139, 92, 246, 0.35),
+        0 6px 20px rgba(0, 0, 0, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.25);
+}
+
+.download-button:hover::before {
+    left: 100%;
+}
+
+.download-button:active {
+    transform: translateY(-1px) scale(1.01);
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    background: linear-gradient(135deg, #7C3AED 0%, #6D28D9 50%, #5B21B6 100%);
+    box-shadow: 
+        0 6px 24px rgba(139, 92, 246, 0.3),
+        0 3px 12px rgba(0, 0, 0, 0.2),
+        inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Focus state for accessibility */
+.download-button:focus {
+    outline: none;
+    box-shadow: 
+        0 8px 32px rgba(139, 92, 246, 0.25),
+        0 4px 16px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2),
+        0 0 0 3px rgba(139, 92, 246, 0.4);
+}
+
+.download-button:focus:hover {
+    box-shadow: 
+        0 12px 40px rgba(139, 92, 246, 0.35),
+        0 6px 20px rgba(0, 0, 0, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3),
+        0 0 0 3px rgba(139, 92, 246, 0.5);
+}
+
+/* Icon styling within the download button */
+.download-button .download-icon {
+    width: 20px;
+    height: 20px;
+    stroke-width: 2.5;
 }

@@ -137,7 +137,10 @@ app.post('/api/tailor-resume', async (req, res) => {
     "Maintain all content length. Do not summarize, shorten, or omit key bullet points. Expand sections as needed to cover all critical responsibilities and skills from the job description.",
     "Ensure all returned fields strictly follow the HTML-based template structure provided below (no header tags allowed).",
     "Insert <br> after each block in EXPERIENCE, EDUCATION, SKILLS, PROJECTS, and LICENCE_CERTIFICATIONS to separate entries visually.",
-    "Ensure the final resume is optimized to score at least 98% or higher when evaluated using any standard ATS scoring tool against the provided job description. Do not return the resume if this score is not achieved—optimize further if needed."
+    "Ensure the final resume is optimized to score at least 98% or higher when evaluated using any standard ATS scoring tool against the provided job description. Do not return the resume if this score is not achieved—optimize further if needed.",
+    "Ensure the skill section includes all relevant skills from the job description, even if they are not explicitly mentioned in the original resume, and for any points that are not mentioned in the resume, add them to the skills section.",
+    "Ensure the final resume is optimized to score at least 98% or higher when evaluated using any standard ATS scoring tool against the provided job description. Do not return the resume if this score is not achieved—optimize further if needed.",
+    
   ],
   "template": {
     "NAME": "Only the person's name as plain text.",

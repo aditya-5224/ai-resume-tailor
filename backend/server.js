@@ -126,15 +126,18 @@ app.post('/api/tailor-resume', async (req, res) => {
             return res.status(400).json({ error: 'Missing required fields: resumeText and jobDescription are required' });
         }
         const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
-        const prompt = `{
-  "instructions": "You are an expert resume writer. Given the following resume and job description, update the resume content according to the following rules and return output in JSON format with the exact template structure below.",
+        const prompt = 
+          `{
+  "instructions": "You are an expert resume writer and ATS optimization specialist. Given the following resume and job description, update the resume content according to the following rules and return output in JSON format with the exact template structure below.",
   "objectives": [
-    "Replace the tech stack in the EXPERIENCE section with relevant, updated technologies matching the job description.",
-    "Identify and add missing SKILLS from the job description to the SKILLS section.",
-    "Replace years of experience in the summary/objective by calculation based on oldest experience date, if experience >= 12 months , experience= 1+ years, if experience < 12 months, experience = 1 years, if experience >= 16 months, experience = 1.5 years, if experience >= 18 months, experience = 1.5+ years., and so on for all the other cases, 24, 30, 36, etc.",
-    "Incorporate important ATS keywords from the job description throughout the resume.",
-    "Do not minimize or shorten any section—keep the original length or expand if needed.",
-    "Ensure all returned fields strictly follow the provided HTML-based template structure (do not include header tags)."
+    "Replace the tech stack in the EXPERIENCE section with relevant, updated technologies and tools that match the job description closely, and add points and make it atleast 2 points whereever their are one point in experience",
+    "Identify and add all missing or implied SKILLS from the job description into the SKILLS section, including frameworks, libraries, platforms, and tools.",
+    "Replace the years of experience in the OBJECTIVE section based on oldest job start date using the following logic: if experience >= 12 months, show '1+ years'; if experience >= 16 months, show '1.5 years'; if experience >= 18 months, show '1.5+ years'; if experience >= 24 months, show '2+ years', and so on.",
+    "Incorporate and repeat relevant ATS keywords and phrases from the job description across OBJECTIVE, SKILLS, EXPERIENCE, and PROJECTS. Ensure the terminology matches exactly what is used in the JD (e.g., RESTful APIs vs REST APIs).",
+    "Maintain all content length. Do not summarize, shorten, or omit key bullet points. Expand sections as needed to cover all critical responsibilities and skills from the job description.",
+    "Ensure all returned fields strictly follow the HTML-based template structure provided below (no header tags allowed).",
+    "Insert <br> after each block in EXPERIENCE, EDUCATION, SKILLS, PROJECTS, and LICENCE_CERTIFICATIONS to separate entries visually.",
+    "Ensure the final resume is optimized to score at least 98% or higher when evaluated using any standard ATS scoring tool against the provided job description. Do not return the resume if this score is not achieved—optimize further if needed."
   ],
   "template": {
     "NAME": "Only the person's name as plain text.",
@@ -143,13 +146,14 @@ app.post('/api/tailor-resume', async (req, res) => {
     "EMAIL": "Only the email as plain text.",
     "LINKEDIN": "Only the LinkedIn URL as plain text.",
     "WEBSITE": "Only the website URL as plain text.",
-    "OBJECTIVE": "A short summary/objective as plain text (4-5 sentences).",
-    "EDUCATION": "HTML content WITHOUT any header tags. Use this structure:\n<div class=\"entry\">\n  <div class=\"bold\">Degree Name <span class=\"right\">Year</span></div>\n  <div class=\"italic\">University Name</div>\n  </div>",
-    "SKILLS": "HTML content WITHOUT any header tags. Use this structure:\n<div class=\"tabular\">\n  <div class=\"tabular-row\">\n    <div class=\"tabular-label\">Programming:</div>\n    <div class=\"tabular-content\">Language1, Language2, Language3</div>\n  </div>\n  <div class=\"tabular-row\">\n    <div class=\"tabular-label\">Technologies:</div>\n    <div class=\"tabular-content\">Tool1, Tool2, Tool3</div>\n  </div>\n</div>",
-    "EXPERIENCE": "HTML content WITHOUT any header tags. Use this structure:\n<div class=\"entry\">\n  <div class=\"bold\">Job Title <span class=\"right\">Start Date - End Date</span></div>\n  <div class=\"italic\">Company Name</div>\n  <ul>\n    <li>Achievement or responsibility 1</li>\n    <li>Achievement or responsibility 2</li>\n  </ul>\n</div>",
-    "PROJECTS": "HTML content WITHOUT any header tags. Use this structure:\n<div class=\"project-item\">\n  <div class=\"bold\">Project Name </div>\n  <div>Brief description of the project and technologies used.</div>\n</div>",
-    "LICENCE_CERTIFICATIONS": "HTML content WITHOUT any header tags. Use this structure:\n<div class=\"entry\">\n  <div class=\"bold\">Activity Name </div>\n  <div>Description of the activity or role.</div>\n</div>",  },
-}
+    "OBJECTIVE": "A short summary/objective as plain text (4-5 sentences), tailored to the job description, showcasing experience, skills, job role alignment, and measurable impact. Include specific ATS keywords from the JD.",
+    "EDUCATION": "HTML content WITHOUT any header tags. Use this structure and add a <br> after each entry:\n<div class=\"entry\">\n  <div class=\"bold\">Degree Name <span class=\"right\">Year</span></div>\n  <div class=\"italic\">University Name</div>\n</div><br>",
+    "SKILLS": "HTML content WITHOUT any header tags. Use this structure and add a <br> after the block:\n<div class=\"tabular\">\n  <div class=\"tabular-row\">\n    <div class=\"tabular-label\">Programming:</div>\n    <div class=\"tabular-content\">Language1, Language2, Language3</div>\n  </div>\n  <div class=\"tabular-row\">\n    <div class=\"tabular-label\">Technologies:</div>\n    <div class=\"tabular-content\">Tool1, Tool2, Tool3</div>\n  </div>\n</div><br>",
+    "EXPERIENCE": "HTML content WITHOUT any header tags. Use this structure and add a <br> after each entry:\n<div class=\"entry\">\n  <div class=\"bold\">Job Title <span class=\"right\">Start Date - End Date</span></div>\n  <div class=\"italic\">Company Name</div>\n  <ul>\n    <li>Achievement or responsibility 1</li>\n    <li>Achievement or responsibility 2</li>\n  </ul>\n</div><br>",
+    "PROJECTS": "HTML content WITHOUT any header tags. Use this structure and add a <br> after each entry:\n<div class=\"project-item\">\n  <div class=\"bold\">Project Name </div>\n  <div>Brief description of the project and technologies used. Include relevant ATS keywords and responsibilities related to the JD.</div>\n</div><br>",
+    "LICENCE_CERTIFICATIONS": "HTML content WITHOUT any header tags. Use this structure and add a <br> after each entry:\n<div class=\"entry\">\n  <div class=\"bold\">Certification Name </div>\n  <div>Description of the certification or achievement, including issuing body and date (if available).</div>\n</div><br>"
+  },
+};
 Resume:
 ${resumeText}
 

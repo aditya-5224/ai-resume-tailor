@@ -451,8 +451,8 @@ a:hover {
         display: none !important;
     }
     
-    .app-content {
-        padding: 0 !important;
-        margin: 0 !important;
+        .app-content {
+            padding: 0 !important;
+            margin: 0 !important;
+        }
     }
-}

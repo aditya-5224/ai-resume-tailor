@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { downloadResumePDF } from '../services/geminiService';
+import resumeTemplate from '../utils/resumeTemplate';
 import './ResumeResults.css';
 
-const ResumeResults = ({ originalResume, tailoredResume, onBackToHome }) => {
+const ResumeResults = ({ originalResume, tailoredResume, resumeFields, onBackToHome }) => {
   // Reference to store original formatting for applying to tailored resume
   let originalFormattingRef = [];
   
@@ -130,132 +132,8 @@ const ResumeResults = ({ originalResume, tailoredResume, onBackToHome }) => {
     return formattedLines;
   };
 
-  // Function to apply original formatting to new content
-  const applyOriginalFormatting = (newContent, originalFormatting) => {
-    if (!newContent || !originalFormatting.length) return [];
-    
-    const newLines = newContent.split('\n');
-    const formattedNewLines = [];
-    
-    // Create a mapping of section headers and their formatting
-    const sectionFormattingMap = new Map();
-    originalFormatting.forEach(line => {
-      if (line.isSection) {
-        sectionFormattingMap.set(line.trimmedLine.toUpperCase(), line);
-      }
-    });
-    
-    // Apply formatting to new content
-    newLines.forEach((line, index) => {
-      const trimmedLine = line.trim();
-      
-      // Find matching original formatting
-      let matchedFormatting = null;
-      
-      // Check for section headers
-      const upperLine = trimmedLine.toUpperCase();
-      if (sectionFormattingMap.has(upperLine)) {
-        matchedFormatting = sectionFormattingMap.get(upperLine);
-      } else {
-        // Check for partial matches or similar sections
-        for (const [key, formatting] of sectionFormattingMap) {
-          if (key.includes(upperLine) || upperLine.includes(key)) {
-            matchedFormatting = formatting;
-            break;
-          }
-        }
-      }
-      
-      // If no specific section match, infer from content type
-      if (!matchedFormatting) {
-        const isEmpty = line.length === 0 || trimmedLine.length === 0;
-        const isAllCaps = trimmedLine === trimmedLine.toUpperCase() && /[A-Z]/.test(trimmedLine);
-        const isLikelyName = index < 3 && !trimmedLine.includes('@') && !trimmedLine.includes('|') && 
-                            trimmedLine.split(' ').length <= 4;
-        const isLikelySection = isAllCaps && trimmedLine.length > 2;
-        const isContactInfo = /@/.test(trimmedLine) || /\d{3}[-.\s]?\d{3}[-.\s]?\d{4}/.test(trimmedLine);
-        const isBulletPoint = /^\s*[•\-\*\+]\s/.test(line);
-        
-        matchedFormatting = {
-          originalLine: line,
-          trimmedLine,
-          isEmpty,
-          leadingSpaceCount: (line.match(/^\s*/) || [''])[0].length,
-          alignment: isContactInfo || isLikelyName ? 'center' : 'left',
-          fontSize: isLikelyName ? '16pt' : isLikelySection ? '12pt' : '11pt',
-          fontWeight: isLikelyName || isLikelySection ? 'bold' : 'normal',
-          textDecoration: isLikelySection ? 'underline' : 'none',
-          fontFamily: 'Calibri, Arial, sans-serif',
-          isSection: isLikelySection,
-          isName: isLikelyName,
-          isContact: isContactInfo,
-          isBullet: isBulletPoint,
-          lineIndex: index
-        };
-      }
-      
-      formattedNewLines.push({
-        ...matchedFormatting,
-        originalLine: line,
-        trimmedLine,
-        lineIndex: index
-      });
-    });
-    
-    return formattedNewLines;
-  };
 
-  // Function to format content into structured sections with preserved formatting
-  const formatResumeStructure = (content, isOriginal = false) => {
-    if (!content) return [];
-    
-    const cleanContent = isOriginal ? content : cleanResumeContent(content);
-    
-    // Analyze original formatting if this is the original resume
-    const formattingData = isOriginal ? 
-      analyzeOriginalFormatting(cleanContent) : 
-      applyOriginalFormatting(cleanContent, originalFormattingRef);
-    
-    // Store original formatting for reference
-    if (isOriginal) {
-      originalFormattingRef = formattingData;
-    }
-    
-    return formattingData;
-  };
-
-  const originalFormattedLines = formatResumeStructure(originalResume, true);
-  const tailoredFormattedLines = formatResumeStructure(tailoredResume, false);
-
-  // Function to download resume as .doc file with enhanced formatting preservation
-  const downloadResume = () => {
-    const currentFormattedLines = activeView === 'tailored' ? tailoredFormattedLines : originalFormattedLines;
-    
-    if (!currentFormattedLines.length) {
-      alert('No resume content to download');
-      return;
-    }
-
-    // Convert formatted lines to HTML format for Word compatibility
-    const htmlContent = convertFormattedLinesToWordHTML(currentFormattedLines);
-    
-    // Create blob with HTML content and Word MIME type
-    const blob = new Blob([htmlContent], { 
-      type: 'application/msword'
-    });
-    const url = window.URL.createObjectURL(blob);
-    
-    // Create temporary download link
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `${activeView === 'tailored' ? 'tailored' : 'original'}_resume.doc`;
-    document.body.appendChild(link);
-    link.click();
-    
-    // Clean up
-    document.body.removeChild(link);
-    window.URL.revokeObjectURL(url);
-  };
+  // (Removed misplaced code block here)
 
   // Function to convert formatted lines to Word-compatible HTML with exact formatting
   const convertFormattedLinesToWordHTML = (formattedLines) => {
@@ -665,56 +543,52 @@ const ResumeResults = ({ originalResume, tailoredResume, onBackToHome }) => {
       </div>
 
       <div className="resume-display-area">
-        <div className="resume-header">
-          <h1 className="resume-title">
-            {activeView === 'tailored' ? 'Tailored Resume' : 'Original Resume'}
-          </h1>
-          <div className="resume-subtitle">
-            {activeView === 'tailored' 
-              ? 'AI-optimized version tailored for your target position'
-              : 'Your original resume content'
-            }
-          </div>
-        </div>
-
-        <div className="resume-content">
-          {activeView === 'tailored' ? (
-            tailoredResume ? (
-              <FormattedResume 
-                formattedLines={tailoredFormattedLines} 
-                className="tailored"
-              />
-            ) : (
-              <div className="no-content-message">
-                <p>No tailored resume available. Please go back and generate one first.</p>
-              </div>
-            )
+        {activeView === 'tailored' ? (
+          <iframe
+            title="Tailored Resume Preview"
+            srcDoc={tailoredResume}
+            style={{ width: '100%', minHeight: '900px', border: 'none', background: 'white', borderRadius: '12px', boxShadow: '0 2px 16px rgba(0,0,0,0.08)' }}
+          />
+        ) : (
+          originalResume ? (
+            <pre style={{ background: '#f8f9fa', padding: '2rem', borderRadius: '12px', fontSize: '1rem', color: '#222', whiteSpace: 'pre-wrap', boxShadow: '0 2px 16px rgba(0,0,0,0.05)' }}>
+              {originalResume}
+            </pre>
           ) : (
-            originalResume ? (
-              <FormattedResume 
-                formattedLines={originalFormattedLines} 
-                className="original"
-              />
-            ) : (
-              <div className="no-content-message">
-                <p>No original resume available. Please go back and upload one first.</p>
-              </div>
-            )
-          )}
-        </div>
-
+            <div className="no-content-message">
+              <p>No original resume available. Please go back and upload one first.</p>
+            </div>
+          )
+        )}
         <div className="resume-actions">
           <button 
             className="action-button primary"
-            onClick={downloadResume}
+            onClick={async () => {
+              // Download tailored resume as PDF
+              if (activeView === 'tailored' && resumeFields) {
+                try {
+                  await downloadResumePDF(resumeFields);
+                } catch (error) {
+                  console.error('Failed to download PDF:', error);
+                  alert('Failed to download PDF. Please try again.');
+                }
+              } else if (activeView === 'original' && originalResume) {
+                // For original resume, still download as text file
+                const blob = new Blob([originalResume], { type: 'text/plain' });
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'original_resume.txt';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                window.URL.revokeObjectURL(url);
+              } else {
+                alert('Resume data not available for download. Please try generating a new resume.');
+              }
+            }}
           >
-            Download {activeView === 'tailored' ? 'Tailored' : 'Original'} Resume
-          </button>
-          <button 
-            className="action-button secondary"
-            onClick={printResume}
-          >
-            Print Resume
+            Download {activeView === 'tailored' ? 'PDF Resume' : 'Original Resume'}
           </button>
         </div>
       </div>

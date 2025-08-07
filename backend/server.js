@@ -1,6 +1,11 @@
+
 const express = require('express');
 const cors = require('cors');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
+const resumeTemplate = require('./resumeTemplate');
+const fs = require('fs');
+const path = require('path');
+const pdf = require('html-pdf');
 require('dotenv').config();
 
 const app = express();
@@ -27,67 +32,223 @@ app.get('/api/test', (req, res) => {
     });
 });
 
+// PDF download endpoint
+app.post('/api/download-resume-pdf', async (req, res) => {
+    try {
+        const { fields } = req.body; // fields should be the filled template fields
+        if (!fields) {
+            return res.status(400).json({ error: 'Missing resume fields' });
+        }
+        
+        // Helper to sanitize and ensure valid HTML for each section
+        function sanitizeSection(html, fallbackContent) {
+            if (!html) return fallbackContent || '<div>No information available.</div>';
+            return html.trim();
+        }
+        
+        // Helper function to add numbering to sections
+        function addNumberingToSection(html, sectionName) {
+            if (!html) return '';
+            
+            // Split by entry divs and add numbering
+            const entries = html.split('<div class="entry">');
+            if (entries.length <= 1) return html; // No entries to number
+            
+            let numberedHtml = entries[0]; // Keep any initial content
+            
+            for (let i = 1; i < entries.length; i++) {
+                // Find the first bold element and add the number inline
+                let entryContent = entries[i];
+                if (entryContent.includes('<div class="bold">')) {
+                    entryContent = entryContent.replace(
+                        '<div class="bold">',
+                        `<div class="bold">${i}. `
+                    );
+                } else {
+                    // If no bold element, add number at the beginning
+                    entryContent = `${i}. ` + entryContent;
+                }
+                numberedHtml += `<div class="entry">` + entryContent;
+            }
+            
+            return numberedHtml;
+        }
+        
+        // Fill the template with numbered sections
+        let html = resumeTemplate
+            .replace(/{{NAME}}/g, fields.NAME || '')
+            .replace(/{{DESIGNATION}}/g, fields.DESIGNATION || '')
+            .replace(/{{PHONE}}/g, fields.PHONE || '')
+            .replace(/{{LOCATION}}/g, fields.LOCATION || '')
+            .replace(/{{EMAIL}}/g, fields.EMAIL || '')
+            .replace(/{{LINKEDIN}}/g, fields.LINKEDIN || '')
+            .replace(/{{WEBSITE}}/g, fields.WEBSITE || '')
+            .replace(/{{OBJECTIVE}}/g, fields.OBJECTIVE || '')
+            .replace(/{{EDUCATION}}/g, addNumberingToSection(sanitizeSection(fields.EDUCATION, '<div class="entry"><div>No education information available.</div></div>'), 'education'))
+            .replace(/{{SKILLS}}/g, sanitizeSection(fields.SKILLS, '<div>No skills information available.</div>'))
+            .replace(/{{EXPERIENCE}}/g, addNumberingToSection(sanitizeSection(fields.EXPERIENCE, '<div class="entry"><div>No experience information available.</div></div>'), 'experience'))
+            .replace(/{{PROJECTS}}/g, sanitizeSection(fields.PROJECTS, '<div class="project-item"><div>No projects information available.</div></div>'))
+            .replace(/{{LICENCE_CERTIFICATIONS}}/g, addNumberingToSection(sanitizeSection(fields.LICENCE_CERTIFICATIONS || fields.CERTIFICATIONS, '<div class="entry"><div>No certifications available.</div></div>'), 'certifications'))
+            .replace(/{{EXTRACURRICULAR}}/g, sanitizeSection(fields.EXTRACURRICULAR, '<div class="entry"><div>No extracurricular activities available.</div></div>'))
+            .replace(/{{LEADERSHIP}}/g, sanitizeSection(fields.LEADERSHIP, '<div class="entry"><div>No leadership experience available.</div></div>'));
+
+        // Generate PDF from HTML
+        const options = {
+            format: 'A4',
+            border: '0',
+            printBackground: true,
+            type: 'pdf',
+            quality: '75'
+        };
+        
+        pdf.create(html, options).toBuffer((err, buffer) => {
+            if (err) {
+                console.error('PDF generation error:', err);
+                return res.status(500).json({ error: 'PDF generation failed', details: err.message });
+            }
+            res.set({
+                'Content-Type': 'application/pdf',
+                'Content-Disposition': 'attachment; filename="tailored_resume.pdf"',
+                'Content-Length': buffer.length
+            });
+            res.send(buffer);
+        });
+    } catch (error) {
+        console.error('PDF endpoint error:', error);
+        res.status(500).json({ error: 'Failed to generate PDF', details: error.message });
+    }
+});
+
 app.post('/api/tailor-resume', async (req, res) => {
     try {
         const { resumeText, jobDescription } = req.body;
-
-        // Validate input
         if (!resumeText || !jobDescription) {
-            return res.status(400).json({ 
-                error: 'Missing required fields: resumeText and jobDescription are required' 
-            });
+            return res.status(400).json({ error: 'Missing required fields: resumeText and jobDescription are required' });
         }
-
-        const model = genAI.getGenerativeModel({ 
-            model: 'gemini-2.0-flash'
-        });
-
-        const prompt = `
-You are an expert resume writer. Your task is to tailor the provided resume to match the job description while preserving the EXACT structure and format.
-
-CRITICAL REQUIREMENTS:
-1. PRESERVE ALL SECTION HEADINGS EXACTLY as they appear in the original (PERSONAL INFORMATION, CONTACT, SUMMARY, EXPERIENCE, EDUCATION, SKILLS, etc.)
-2. COPY PERSONAL INFORMATION SECTION EXACTLY - name, phone, email, address, LinkedIn - NO CHANGES
-3. Keep the EXACT same formatting structure, spacing, and layout
-4. Use bullet points (•) for all job descriptions and achievements
-5. Maintain all employment dates, company names, and education details exactly as shown
-6. Only modify the content of job descriptions and skills to match the job requirements
-7. Add relevant keywords from the job description naturally into job descriptions
-8. Quantify achievements where possible with numbers and metrics
-
-WHAT TO TAILOR:
-- Job description bullet points to highlight relevant skills
-- Skills section to emphasize job-relevant capabilities
-- Summary/Objective to align with the target role
-- Achievement descriptions to show relevant impact
-
-WHAT NEVER TO CHANGE:
-- Personal contact information
-- Section headings and structure
-- Company names and employment dates
-- Education details and graduation dates
-- Overall format and layout
-
-Original Resume:
+        const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+        const prompt = `{
+  "instructions": "You are an expert resume writer. Given the following resume and job description, update the resume content according to the following rules and return output in JSON format with the exact template structure below.",
+  "objectives": [
+    "Replace the tech stack in the EXPERIENCE section with relevant, updated technologies matching the job description.",
+    "Identify and add missing SKILLS from the job description to the SKILLS section.",
+    "Replace years of experience in the summary/objective by calculation based on oldest experience date, if experience >= 12 months , experience= 1+ years, if experience < 12 months, experience = 1 years, if experience >= 16 months, experience = 1.5 years, if experience >= 18 months, experience = 1.5+ years., and so on for all the other cases, 24, 30, 36, etc.",
+    "Incorporate important ATS keywords from the job description throughout the resume.",
+    "Do not minimize or shorten any section—keep the original length or expand if needed.",
+    "Ensure all returned fields strictly follow the provided HTML-based template structure (do not include header tags)."
+  ],
+  "template": {
+    "NAME": "Only the person's name as plain text.",
+    "PHONE": "Only the phone number as plain text.",
+    "LOCATION": "Only the location as plain text (e.g., 'City, State').",
+    "EMAIL": "Only the email as plain text.",
+    "LINKEDIN": "Only the LinkedIn URL as plain text.",
+    "WEBSITE": "Only the website URL as plain text.",
+    "OBJECTIVE": "A short summary/objective as plain text (4-5 sentences).",
+    "EDUCATION": "HTML content WITHOUT any header tags. Use this structure:\n<div class=\"entry\">\n  <div class=\"bold\">Degree Name <span class=\"right\">Year</span></div>\n  <div class=\"italic\">University Name</div>\n  </div>",
+    "SKILLS": "HTML content WITHOUT any header tags. Use this structure:\n<div class=\"tabular\">\n  <div class=\"tabular-row\">\n    <div class=\"tabular-label\">Programming:</div>\n    <div class=\"tabular-content\">Language1, Language2, Language3</div>\n  </div>\n  <div class=\"tabular-row\">\n    <div class=\"tabular-label\">Technologies:</div>\n    <div class=\"tabular-content\">Tool1, Tool2, Tool3</div>\n  </div>\n</div>",
+    "EXPERIENCE": "HTML content WITHOUT any header tags. Use this structure:\n<div class=\"entry\">\n  <div class=\"bold\">Job Title <span class=\"right\">Start Date - End Date</span></div>\n  <div class=\"italic\">Company Name</div>\n  <ul>\n    <li>Achievement or responsibility 1</li>\n    <li>Achievement or responsibility 2</li>\n  </ul>\n</div>",
+    "PROJECTS": "HTML content WITHOUT any header tags. Use this structure:\n<div class=\"project-item\">\n  <div class=\"bold\">Project Name </div>\n  <div>Brief description of the project and technologies used.</div>\n</div>",
+    "LICENCE_CERTIFICATIONS": "HTML content WITHOUT any header tags. Use this structure:\n<div class=\"entry\">\n  <div class=\"bold\">Activity Name </div>\n  <div>Description of the activity or role.</div>\n</div>",  },
+}
+Resume:
 ${resumeText}
 
 Job Description:
 ${jobDescription}
-
-Return the complete tailored resume with ALL sections preserved, using the exact same headings and structure as the original. Start with the person's name and contact information exactly as provided.
-        `;
-        
+`;
         const result = await model.generateContent(prompt);
         const response = await result.response;
-        res.json({ tailoredResume: response.text() });
-    } catch (error) {
-        console.error('Error:', error);
-        res.status(500).json({ 
-            error: error.message || 'Failed to process the resume'
+        let fields;
+        const rawText = response.text();
+        console.log('Raw Gemini response:', rawText);
+        try {
+            // Try direct JSON parse first
+            fields = JSON.parse(rawText);
+            console.log('Parsed fields from Gemini:', Object.keys(fields));
+        } catch (e) {
+            // Try to extract JSON object from the response if extra text is present
+            const match = rawText.match(/\{[\s\S]*\}/);
+            if (match) {
+                try {
+                    fields = JSON.parse(match[0]);
+                    console.log('Extracted JSON fields from Gemini:', Object.keys(fields));
+                } catch (err) {
+                    console.error('Failed to parse extracted JSON:', match[0]);
+                    return res.status(500).json({ error: 'Gemini did not return valid JSON.' });
+                }
+            } else {
+                console.error('No JSON object found in Gemini response:', rawText);
+                return res.status(500).json({ error: 'Gemini did not return valid JSON.' });
+            }
+        }
+        
+        // Helper to sanitize and ensure valid HTML for each section
+        function sanitizeSection(html, fallbackContent) {
+            if (!html) return fallbackContent || '<div>No information available.</div>';
+            // Basic HTML cleanup
+            return html.trim();
+        }
+        
+        // Helper function to add numbering to sections
+        function addNumberingToSection(html, sectionName) {
+            if (!html) return '';
+            
+            // Split by entry divs and add numbering
+            const entries = html.split('<div class="entry">');
+            if (entries.length <= 1) return html; // No entries to number
+            
+            let numberedHtml = entries[0]; // Keep any initial content
+            
+            for (let i = 1; i < entries.length; i++) {
+                // Find the first bold element and add the number inline
+                let entryContent = entries[i];
+                if (entryContent.includes('<div class="bold">')) {
+                    entryContent = entryContent.replace(
+                        '<div class="bold">',
+                        `<div class="bold">${i}. `
+                    );
+                } else {
+                    // If no bold element, add number at the beginning
+                    entryContent = `${i}. ` + entryContent;
+                }
+                numberedHtml += `<div class="entry">` + entryContent;
+            }
+            
+            return numberedHtml;
+        }
+        
+        // Fill the template with numbering for specified sections
+        let filledHtml = resumeTemplate
+            .replace(/{{NAME}}/g, fields.NAME || '')
+            .replace(/{{DESIGNATION}}/g, fields.DESIGNATION || '')
+            .replace(/{{PHONE}}/g, fields.PHONE || '')
+            .replace(/{{LOCATION}}/g, fields.LOCATION || '')
+            .replace(/{{EMAIL}}/g, fields.EMAIL || '')
+            .replace(/{{LINKEDIN}}/g, fields.LINKEDIN || '')
+            .replace(/{{WEBSITE}}/g, fields.WEBSITE || '')
+            .replace(/{{OBJECTIVE}}/g, fields.OBJECTIVE || '')
+            .replace(/{{EDUCATION}}/g, addNumberingToSection(sanitizeSection(fields.EDUCATION, '<div class="entry"><div>No education information available.</div></div>'), 'education'))
+            .replace(/{{SKILLS}}/g, sanitizeSection(fields.SKILLS, '<div>No skills information available.</div>'))
+            .replace(/{{EXPERIENCE}}/g, addNumberingToSection(sanitizeSection(fields.EXPERIENCE, '<div class="entry"><div>No experience information available.</div></div>'), 'experience'))
+            .replace(/{{PROJECTS}}/g, sanitizeSection(fields.PROJECTS, '<div class="project-item"><div>No projects information available.</div></div>'))
+            .replace(/{{LICENCE_CERTIFICATIONS}}/g, addNumberingToSection(sanitizeSection(fields.LICENCE_CERTIFICATIONS || fields.CERTIFICATIONS, '<div class="entry"><div>No certifications available.</div></div>'), 'certifications'))
+            .replace(/{{EXTRACURRICULAR}}/g, sanitizeSection(fields.EXTRACURRICULAR, '<div class="entry"><div>No extracurricular activities available.</div></div>'))
+            .replace(/{{LEADERSHIP}}/g, sanitizeSection(fields.LEADERSHIP, '<div class="entry"><div>No leadership experience available.</div></div>'));
+        
+        // Return both HTML for display and the structured fields for PDF generation
+        res.json({ 
+            tailoredResume: filledHtml, 
+            fields: fields // Include fields for PDF generation
         });
+        console.log('Sent HTML template with length:', filledHtml.length);
+    } catch (error) {
+        console.error('Resume tailor error:', error);
+        res.status(500).json({ error: error.message });
     }
 });
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
+
+

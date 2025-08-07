@@ -64,7 +64,8 @@ const ResultsPage = ({
   return (
     <ResumeResults
       originalResume={resumeText}
-      tailoredResume={tailoredResume}
+      tailoredResume={tailoredResume?.tailoredResume || tailoredResume} // Handle both old and new format
+      resumeFields={tailoredResume?.fields} // Pass the fields for PDF generation
       onBackToHome={handleBackToHome}
     />
   );

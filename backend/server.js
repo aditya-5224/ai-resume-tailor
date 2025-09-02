@@ -95,7 +95,12 @@ app.post('/api/download-resume-pdf', async (req, res) => {
         // Generate PDF from HTML
         const options = {
             format: 'A4',
-            border: '0',
+            border: {
+                top: '1.5cm',
+                right: '1cm',
+                bottom: '1.5cm',
+                left: '1cm'
+            },
             printBackground: true,
             type: 'pdf',
             quality: '75'
@@ -130,6 +135,7 @@ app.post('/api/tailor-resume', async (req, res) => {
           `{
   "instructions": "You are an expert resume writer and ATS optimization specialist. Given the following resume and job description, update the resume content according to the following rules and return output in JSON format with the exact template structure below.",
   "objectives": [
+    "Dont use the company name  from JD any where in resume.
     "Replace the tech stack in the EXPERIENCE section with relevant, updated technologies and tools that match the job description closely, and add points and make it atleast 2 points whereever their are one point in experience",
     "Identify and add all missing or implied SKILLS from the job description into the SKILLS section, including frameworks, libraries, platforms, and tools.",
     "Replace the years of experience in the OBJECTIVE section based on oldest job start date using the following logic: if experience >= 12 months, show '1+ years'; if experience >= 16 months, show '1.5 years'; if experience >= 18 months, show '1.5+ years'; if experience >= 24 months, show '2+ years', and so on.",

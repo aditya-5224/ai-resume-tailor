@@ -6,7 +6,7 @@ const resumeTemplate = `
   <title>Single Page Resume</title>
   <style>
     @page { 
-      margin: 1.5rem !important; 
+      margin: 2.5cm !important; 
       size: A4;
     }
     * { 
@@ -19,7 +19,7 @@ const resumeTemplate = `
       font-size: 21pt;
       line-height: 1.0;
       margin: 0;
-      padding: 1.5rem;
+      padding: 0;
       color: #000;
       width: 100%;
       max-width: 100%;
@@ -130,7 +130,7 @@ const resumeTemplate = `
     /* Force single page layout */
     @media print, screen {
       @page { 
-        margin: 1.5rem !important; 
+        margin: 2.5cm !important; 
         padding: 0 !important;
         border: none !important;
         size: A4;
@@ -138,7 +138,7 @@ const resumeTemplate = `
       html, body {
         font-size: 12.75pt !important;
         line-height: 0.95 !important;
-        padding: 2rem !important;
+        padding: 0 !important;
         margin: 0 !important;
         height: auto !important;
         overflow: visible !important;

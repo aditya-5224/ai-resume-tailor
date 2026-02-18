@@ -92,6 +92,9 @@ app.post('/api/download-resume-pdf', async (req, res) => {
             .replace(/{{EXTRACURRICULAR}}/g, sanitizeSection(fields.EXTRACURRICULAR, '<div class="entry"><div>No extracurricular activities available.</div></div>'))
             .replace(/{{LEADERSHIP}}/g, sanitizeSection(fields.LEADERSHIP, '<div class="entry"><div>No leadership experience available.</div></div>'));
 
+        // Remove all hyperlinks from the HTML to prevent popups in PDF
+        html = html.replace(/<a[^>]*href[^>]*>/gi, '').replace(/<\/a>/gi, '');
+
         // Generate PDF from HTML
         const options = {
             format: 'A4',
@@ -103,7 +106,12 @@ app.post('/api/download-resume-pdf', async (req, res) => {
             },
             printBackground: true,
             type: 'pdf',
-            quality: '75'
+            quality: '75',
+            phantomjs: {
+                '--disable-web-security': '',
+                '--web-security': 'false',
+                '--load-images': 'no'
+            }
         };
         
         pdf.create(html, options).toBuffer((err, buffer) => {
@@ -130,12 +138,13 @@ app.post('/api/tailor-resume', async (req, res) => {
         if (!resumeText || !jobDescription) {
             return res.status(400).json({ error: 'Missing required fields: resumeText and jobDescription are required' });
         }
-        const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+        const model = genAI.getGenerativeModel({ model: 'gemini-3-flash-preview' });
         const prompt = 
           `{
   "instructions": "You are an expert resume writer and ATS optimization specialist. Given the following resume and job description, update the resume content according to the following rules and return output in JSON format with the exact template structure below.",
   "objectives": [
-    "Dont use the company name  from JD any where in resume.
+    "Dont use the company name from JD any where in resume, and also dont mention these tech stacks any where in resume (kubernets, AWS Bedrock, AWS SageMaker, ECS/EKS, RDS).
+    "keep the summary as this, just add req tech stacks and ignore (kubernets, AWS Bedrock, AWS SageMaker, ECS/EKS, RDS)  'Highly motivated Software Engineer with 3.5+ years of experience in backend development, API testing, and code optimization seeking to leverage expertise in Node.js, Python, RESTful APIs, and microservices architecture to contribute to the development and optimization of AI-driven tools and scalable software solutions. Proven ability to design, develop, and deploy cloud-native applications, integrate AI/ML workflows, and optimize workloads for performance and cost. Possesses strong skills in AWS services (EC2, S3, RDS, Lambda, ECS/EKS, API Gateway), Snowflake data modeling, CI/CD pipelines, and secure architectures aligned with SOC2, ISO27001, and GDPR compliance. Eager to contribute to a high-performance team focused on delivering impactful solutions for clients.' ",
     "Replace the tech stack in the EXPERIENCE section with relevant, updated technologies and tools that match the job description closely, and add points and make it atleast 2 points whereever their are one point in experience",
     "Identify and add all missing or implied SKILLS from the job description into the SKILLS section, including frameworks, libraries, platforms, and tools.",
     "Replace the years of experience in the OBJECTIVE section based on oldest job start date using the following logic: if experience >= 12 months, show '1+ years'; if experience >= 16 months, show '1.5 years'; if experience >= 18 months, show '1.5+ years'; if experience >= 24 months, show '2+ years', and so on.",
@@ -159,7 +168,7 @@ app.post('/api/tailor-resume', async (req, res) => {
     "EDUCATION": "HTML content WITHOUT any header tags. Use this structure and add a <br> after each entry:\n<div class=\"entry\">\n  <div class=\"bold\">Degree Name <span class=\"right\">Year</span></div>\n  <div class=\"italic\">University Name</div>\n</div><br>",
     "SKILLS": "HTML content WITHOUT any header tags. Use this structure and add a <br> after the block:\n<div class=\"tabular\">\n  <div class=\"tabular-row\">\n    <div class=\"tabular-label\">Programming:</div>\n    <div class=\"tabular-content\">Language1, Language2, Language3</div>\n  </div>\n  <div class=\"tabular-row\">\n    <div class=\"tabular-label\">Technologies:</div>\n    <div class=\"tabular-content\">Tool1, Tool2, Tool3</div>\n  </div>\n</div><br>",
     "EXPERIENCE": "HTML content WITHOUT any header tags. Use this structure and add a <br> after each entry:\n<div class=\"entry\">\n  <div class=\"bold\">Job Title <span class=\"right\">Start Date - End Date</span></div>\n  <div class=\"italic\">Company Name</div>\n  <ul>\n    <li>Achievement or responsibility 1</li>\n    <li>Achievement or responsibility 2</li>\n  </ul>\n</div><br>",
-    "PROJECTS": "HTML content WITHOUT any header tags. Use this structure and add a <br> after each entry:\n<div class=\"project-item\">\n  <div class=\"bold\">Project Name </div>\n  <div>Brief description of the project and technologies used. Include relevant ATS keywords and responsibilities related to the JD.</div>\n</div><br>",
+    "PROJECTS": "HTML content WITHOUT any header tags. Use this structure and add a <br> after each entry:\n<div class=\"project-item\">\n  <div class=\"bold\">Project Name</div>\n  <div><b>Technologies:</b> List of technologies</div>\n  <ul>\n    <li>Responsibility or achievement 1 with ATS keywords</li>\n    <li>Responsibility or achievement 2 with ATS keywords</li>\n    <li>Responsibility or achievement 3 with ATS keywords</li>\n  </ul>\n</div><br>"
     "LICENCE_CERTIFICATIONS": "HTML content WITHOUT any header tags. Use this structure and add a <br> after each entry:\n<div class=\"entry\">\n  <div class=\"bold\">Certification Name </div>\n  <div>Description of the certification or achievement, including issuing body and date (if available).</div>\n</div><br>"
   },
 };

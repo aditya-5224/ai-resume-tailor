@@ -25,8 +25,8 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 // Health check endpoint for Docker
 app.get('/api/test', (req, res) => {
-    res.status(200).json({ 
-        status: 'healthy', 
+    res.status(200).json({
+        status: 'healthy',
         timestamp: new Date().toISOString(),
         service: 'ai-resume-tailor-backend'
     });
@@ -39,23 +39,23 @@ app.post('/api/download-resume-pdf', async (req, res) => {
         if (!fields) {
             return res.status(400).json({ error: 'Missing resume fields' });
         }
-        
+
         // Helper to sanitize and ensure valid HTML for each section
         function sanitizeSection(html, fallbackContent) {
             if (!html) return fallbackContent || '<div>No information available.</div>';
             return html.trim();
         }
-        
+
         // Helper function to add numbering to sections
         function addNumberingToSection(html, sectionName) {
             if (!html) return '';
-            
+
             // Split by entry divs and add numbering
             const entries = html.split('<div class="entry">');
             if (entries.length <= 1) return html; // No entries to number
-            
+
             let numberedHtml = entries[0]; // Keep any initial content
-            
+
             for (let i = 1; i < entries.length; i++) {
                 // Find the first bold element and add the number inline
                 let entryContent = entries[i];
@@ -70,10 +70,10 @@ app.post('/api/download-resume-pdf', async (req, res) => {
                 }
                 numberedHtml += `<div class="entry">` + entryContent;
             }
-            
+
             return numberedHtml;
         }
-        
+
         // Fill the template with numbered sections
         let html = resumeTemplate
             .replace(/{{NAME}}/g, fields.NAME || '')
@@ -82,6 +82,7 @@ app.post('/api/download-resume-pdf', async (req, res) => {
             .replace(/{{LOCATION}}/g, fields.LOCATION || '')
             .replace(/{{EMAIL}}/g, fields.EMAIL || '')
             .replace(/{{LINKEDIN}}/g, fields.LINKEDIN || '')
+            .replace(/{{GITHUB}}/g, fields.GITHUB || '')
             .replace(/{{WEBSITE}}/g, fields.WEBSITE || '')
             .replace(/{{OBJECTIVE}}/g, fields.OBJECTIVE || '')
             .replace(/{{EDUCATION}}/g, addNumberingToSection(sanitizeSection(fields.EDUCATION, '<div class="entry"><div>No education information available.</div></div>'), 'education'))
@@ -113,7 +114,7 @@ app.post('/api/download-resume-pdf', async (req, res) => {
                 '--load-images': 'no'
             }
         };
-        
+
         pdf.create(html, options).toBuffer((err, buffer) => {
             if (err) {
                 console.error('PDF generation error:', err);
@@ -139,30 +140,36 @@ app.post('/api/tailor-resume', async (req, res) => {
             return res.status(400).json({ error: 'Missing required fields: resumeText and jobDescription are required' });
         }
         const model = genAI.getGenerativeModel({ model: 'gemini-3-flash-preview' });
-        const prompt = 
-          `{
-  "instructions": "You are an expert resume writer and ATS optimization specialist. Given the following resume and job description, update the resume content according to the following rules and return output in JSON format with the exact template structure below.",
-  "objectives": [
-    "Dont use the company name from JD any where in resume, and also dont mention these tech stacks any where in resume (kubernets, AWS Bedrock, AWS SageMaker, ECS/EKS, RDS).
-    "keep the summary as this, just add req tech stacks and ignore (kubernets, AWS Bedrock, AWS SageMaker, ECS/EKS, RDS)  'Highly motivated Software Engineer with 3.5+ years of experience in backend development, API testing, and code optimization seeking to leverage expertise in Node.js, Python, RESTful APIs, and microservices architecture to contribute to the development and optimization of AI-driven tools and scalable software solutions. Proven ability to design, develop, and deploy cloud-native applications, integrate AI/ML workflows, and optimize workloads for performance and cost. Possesses strong skills in AWS services (EC2, S3, RDS, Lambda, ECS/EKS, API Gateway), Snowflake data modeling, CI/CD pipelines, and secure architectures aligned with SOC2, ISO27001, and GDPR compliance. Eager to contribute to a high-performance team focused on delivering impactful solutions for clients.' ",
-    "Replace the tech stack in the EXPERIENCE section with relevant, updated technologies and tools that match the job description closely, and add points and make it atleast 2 points whereever their are one point in experience",
-    "Identify and add all missing or implied SKILLS from the job description into the SKILLS section, including frameworks, libraries, platforms, and tools.",
-    "Replace the years of experience in the OBJECTIVE section based on oldest job start date using the following logic: if experience >= 12 months, show '1+ years'; if experience >= 16 months, show '1.5 years'; if experience >= 18 months, show '1.5+ years'; if experience >= 24 months, show '2+ years', and so on.",
-    "Incorporate and repeat relevant ATS keywords and phrases from the job description across OBJECTIVE, SKILLS, EXPERIENCE, and PROJECTS. Ensure the terminology matches exactly what is used in the JD (e.g., RESTful APIs vs REST APIs).",
-    "Maintain all content length. Do not summarize, shorten, or omit key bullet points. Expand sections as needed to cover all critical responsibilities and skills from the job description.",
-    "Ensure all returned fields strictly follow the HTML-based template structure provided below (no header tags allowed).",
-    "Insert <br> after each block in EXPERIENCE, EDUCATION, SKILLS, PROJECTS, and LICENCE_CERTIFICATIONS to separate entries visually.",
-    "Ensure the final resume is optimized to score at least 98% or higher when evaluated using any standard ATS scoring tool against the provided job description. Do not return the resume if this score is not achieved—optimize further if needed.",
-    "Ensure the skill section includes all relevant skills from the job description, even if they are not explicitly mentioned in the original resume, and for any points that are not mentioned in the resume, add them to the skills section.",
-    "Ensure the final resume is optimized to score at least 98% or higher when evaluated using any standard ATS scoring tool against the provided job description. Do not return the resume if this score is not achieved—optimize further if needed.",
-    
-  ],
+        const prompt =
+            `{
+  "Keep the summary structure similar to the one provided below, but modify it appropriately for internship/fresher candidates who do not have professional work experience. Replace years of experience with 'hands-on project experience' or equivalent academic/project-based experience. Base the content strictly on the candidate's resume and add required tech stacks from the JD (excluding Kubernetes, AWS Bedrock, AWS SageMaker, ECS/EKS, RDS).",
+
+  "Replace or restructure the EXPERIENCE section appropriately for internship candidates. If no prior professional experience exists, convert it into relevant sections such as 'Academic Experience', 'Project Experience', or 'Technical Experience'. Ensure at least 2 bullet points per entry and align technologies with the job description.",
+
+  "Identify and add all missing or implied SKILLS from the job description into the SKILLS section, including frameworks, libraries, platforms, tools, methodologies, and concepts. If certain responsibilities from the JD are not reflected in projects, include them in the SKILLS section.",
+
+  "Do not include fabricated professional experience. Instead, highlight hands-on experience through academic projects, personal projects, coursework, open-source contributions, hackathons, certifications, or technical training.",
+
+  "Incorporate and repeat relevant ATS keywords and phrases from the job description across OBJECTIVE, SKILLS, PROJECTS, and any experience-related section. Ensure terminology matches exactly what is used in the JD (e.g., RESTful APIs vs REST APIs).",
+
+  "Maintain or expand content length. Do not shorten or remove important technical details. Expand project descriptions where necessary to fully align with JD responsibilities and ATS keywords.",
+
+  "Ensure all returned fields strictly follow the HTML-based template structure provided below (no header tags allowed).",
+
+  "Insert <br> after each block in EXPERIENCE (or equivalent section), EDUCATION, SKILLS, PROJECTS, and LICENCE_CERTIFICATIONS to separate entries visually.",
+
+  "Ensure the final resume is optimized to score at least 98% or higher when evaluated using a standard ATS scoring tool against the provided job description. Optimize keyword density, terminology alignment, and skill coverage accordingly.",
+
+  "Ensure the SKILLS section comprehensively includes all relevant technical skills, tools, frameworks, platforms, programming languages, methodologies, and soft skills mentioned or implied in the JD, even if they are not explicitly present in the original resume."
+]
+
   "template": {
     "NAME": "Only the person's name as plain text.",
     "PHONE": "Only the phone number as plain text.",
     "LOCATION": "Only the location as plain text (e.g., 'City, State').",
     "EMAIL": "Only the email as plain text.",
     "LINKEDIN": "Only the LinkedIn URL as plain text.",
+    "GITHUB": "Only the GitHub URL as plain text.",
     "WEBSITE": "Only the website URL as plain text.",
     "OBJECTIVE": "A short summary/objective as plain text (4-5 sentences), tailored to the job description, showcasing experience, skills, job role alignment, and measurable impact. Include specific ATS keywords from the JD.",
     "EDUCATION": "HTML content WITHOUT any header tags. Use this structure and add a <br> after each entry:\n<div class=\"entry\">\n  <div class=\"bold\">Degree Name <span class=\"right\">Year</span></div>\n  <div class=\"italic\">University Name</div>\n</div><br>",
@@ -203,24 +210,24 @@ ${jobDescription}
                 return res.status(500).json({ error: 'Gemini did not return valid JSON.' });
             }
         }
-        
+
         // Helper to sanitize and ensure valid HTML for each section
         function sanitizeSection(html, fallbackContent) {
             if (!html) return fallbackContent || '<div>No information available.</div>';
             // Basic HTML cleanup
             return html.trim();
         }
-        
+
         // Helper function to add numbering to sections
         function addNumberingToSection(html, sectionName) {
             if (!html) return '';
-            
+
             // Split by entry divs and add numbering
             const entries = html.split('<div class="entry">');
             if (entries.length <= 1) return html; // No entries to number
-            
+
             let numberedHtml = entries[0]; // Keep any initial content
-            
+
             for (let i = 1; i < entries.length; i++) {
                 // Find the first bold element and add the number inline
                 let entryContent = entries[i];
@@ -235,10 +242,10 @@ ${jobDescription}
                 }
                 numberedHtml += `<div class="entry">` + entryContent;
             }
-            
+
             return numberedHtml;
         }
-        
+
         // Fill the template with numbering for specified sections
         let filledHtml = resumeTemplate
             .replace(/{{NAME}}/g, fields.NAME || '')
@@ -256,10 +263,10 @@ ${jobDescription}
             .replace(/{{LICENCE_CERTIFICATIONS}}/g, addNumberingToSection(sanitizeSection(fields.LICENCE_CERTIFICATIONS || fields.CERTIFICATIONS, '<div class="entry"><div>No certifications available.</div></div>'), 'certifications'))
             .replace(/{{EXTRACURRICULAR}}/g, sanitizeSection(fields.EXTRACURRICULAR, '<div class="entry"><div>No extracurricular activities available.</div></div>'))
             .replace(/{{LEADERSHIP}}/g, sanitizeSection(fields.LEADERSHIP, '<div class="entry"><div>No leadership experience available.</div></div>'));
-        
+
         // Return both HTML for display and the structured fields for PDF generation
-        res.json({ 
-            tailoredResume: filledHtml, 
+        res.json({
+            tailoredResume: filledHtml,
             fields: fields // Include fields for PDF generation
         });
         console.log('Sent HTML template with length:', filledHtml.length);

@@ -197,32 +197,28 @@ const resumeTemplate = `
     <div><b>Phone:</b> {{PHONE}}</div>
     <div><b>Email:</b> <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
     <div><b>LinkedIn:</b> <a href="{{LINKEDIN}}">{{LINKEDIN}}</a></div>
+    <div><b>GitHub:</b> <a href="{{GITHUB}}">{{GITHUB}}</a></div>
   </div>
   <div class="section">
     <h2>Summary</h2>
     <p>{{OBJECTIVE}}</p>
   </div>
-    <br>
   <div class="section">
     <h2>Experience</h2>
     {{EXPERIENCE}}
   </div>
-    <br>
   <div class="section">
     <h2>Education</h2>
     {{EDUCATION}}
   </div>
-  <br>
   <div class="section">
     <h2>Skills</h2>
     {{SKILLS}}
   </div>
-    <br>
   <div class="section">
     <h2>Projects</h2>
     {{PROJECTS}}
   </div>
-  <br>
   <div class="section">
     <h2>Licenses & Certifications</h2>
     {{LICENCE_CERTIFICATIONS}}
